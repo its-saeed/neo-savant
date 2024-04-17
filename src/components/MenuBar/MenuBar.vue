@@ -4,10 +4,10 @@
       <q-menu auto-close>
         <q-list dense>
           <q-item clickable>
-            <q-item-section>Address Convertor</q-item-section>
+            <q-item-section @click="showAddressConvertor">Address Convertor</q-item-section>
           </q-item>
           <q-item clickable>
-            <q-item-section>Units Convertor</q-item-section>
+            <q-item-section @click="showUnitConvertor()">Units Convertor</q-item-section>
           </q-item>
           <q-separator />
           <q-item clickable>
@@ -37,6 +37,24 @@
   </q-bar>
 </template>
 <script setup lang="ts">
+import { useQuasar } from 'quasar';
+import UnitsConverter from '../Tools/UnitsConverter.vue';
+import AddressConverter from '../Tools/AddressConverter.vue';
+
+const q = useQuasar()
+
+function showUnitConvertor() {
+  q.dialog({
+    component: UnitsConverter,
+  })
+}
+
+function showAddressConvertor() {
+  q.dialog({
+    component: AddressConverter,
+  })
+}
+
 </script>
 <style lang="">
 

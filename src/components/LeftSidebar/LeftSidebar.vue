@@ -1,15 +1,15 @@
 <template lang="">
   <div class="column full-height">
+    <q-bar class="bg-dark text-white shadow-2">
+      <q-toolbar-title>Files</q-toolbar-title>
+    </q-bar>
     <q-scroll-area class="col">
-      <q-bar class="bg-dark text-white shadow-2">
-        <q-toolbar-title>Files</q-toolbar-title>
-      </q-bar>
       <file-selector/>
     </q-scroll-area>
+    <q-bar class="bg-dark text-white shadow-2">
+      <q-toolbar-title>Contracts</q-toolbar-title>
+    </q-bar>
     <q-scroll-area class="col">
-      <q-bar class="bg-dark text-white shadow-2">
-        <q-toolbar-title>Contracts</q-toolbar-title>
-      </q-bar>
       <contract-list/>
     </q-scroll-area>
   </div>

@@ -21,7 +21,11 @@
     "quasar": "^2.8.0",
     "vue": "^3.4.18",
     "vue-codemirror": "^6.1.1",
-    "vue-router": "^4.0.12"
+    "vue-router": "^4.0.12",
+    "@zilliqa-js/account": "^3.5.0",
+    "@zilliqa-js/crypto": "^3.5.0",
+    "@zilliqa-js/util": "^3.5.0",
+    "@zilliqa-js/zilliqa": "^3.5.0"
   },
   "devDependencies": {
     "@quasar/app-vite": "^1.8.0",
