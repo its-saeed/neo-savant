@@ -31,10 +31,17 @@
 
 <script setup lang="ts">
 import { Codemirror } from 'vue-codemirror';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { eventBus } from 'src/event-bus';
+import { ContractInfo } from 'src/contracts';
 
 const extensions = ref([])
-const code = ref('hello world')
+const code = ref('')
+onMounted(() => {
+  eventBus.on('contract-selected', (contract: ContractInfo) => {
+    code.value = contract.code;
+  })
+})
 
 defineOptions({
   name: 'IndexPage',
