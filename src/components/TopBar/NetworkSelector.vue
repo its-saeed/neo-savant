@@ -30,7 +30,7 @@ const store = useNetworksStore();
 
 const setSelectedNetwork = (name: string) => {
   try {
-    store.setSelected(name + '1')
+    store.setSelected(name)
     q.notify({
       type: 'info',
       message: `<strong>${name}</strong> network selected`,
