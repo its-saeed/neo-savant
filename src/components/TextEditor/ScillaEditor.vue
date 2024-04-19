@@ -12,8 +12,8 @@ import {
 } from '@codemirror/autocomplete';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { bracketMatching, foldGutter, foldKeymap } from '@codemirror/language';
-import { lintKeymap, linter, Diagnostic, lintGutter } from '@codemirror/lint';
-import { highlightSelectionMatches, searchKeymap } from '@codemirror/search';
+import { lintKeymap, linter, Diagnostic, lintGutter, openLintPanel, closeLintPanel } from '@codemirror/lint';
+import { highlightSelectionMatches, searchKeymap, openSearchPanel, closeSearchPanel } from '@codemirror/search';
 import {
   crosshairCursor,
   drawSelection,
@@ -25,11 +25,13 @@ import {
   lineNumbers,
 } from '@codemirror/view';
 
-import { onMounted, ref, defineModel, watch } from 'vue';
+import { onMounted, ref, defineModel, watch} from 'vue';
 import { scillaCheck, Warning as CheckerWarning, Error as CheckerError } from 'src/scilla';
 
 const editor = ref<Element>();
 const model = defineModel({ type: String });
+let _toggleSearchPanel = false;
+let _toggleLintPanel = false;
 
 let editorView: EditorView;
 
@@ -44,6 +46,29 @@ watch(model, (newVal) => {
     });
   }
 });
+
+const toggleSearchPanel = () => {
+  _toggleSearchPanel = !_toggleSearchPanel;
+  if (_toggleSearchPanel) {
+    openSearchPanel(editorView)
+  } else {
+    closeSearchPanel(editorView);
+  }
+}
+
+const toggleLintPanel = () => {
+  _toggleLintPanel = !_toggleLintPanel;
+  if (_toggleLintPanel) {
+    openLintPanel(editorView)
+  } else {
+    closeLintPanel(editorView);
+  }
+}
+
+defineExpose({
+  toggleSearchPanel,
+  toggleLintPanel
+})
 
 const scillaLinter = linter(async (view): Promise<Diagnostic[]> => {
 
