@@ -73,8 +73,6 @@ defineExpose({
 const scillaLinter = linter(async (view): Promise<Diagnostic[]> => {
 
   let response = await scillaCheck(view.state.doc.toString());
-  console.log(response)
-
   let diagnostics: Diagnostic[] = [];
   if (response.warnings) {
     response.warnings.forEach((err: CheckerWarning) => {
