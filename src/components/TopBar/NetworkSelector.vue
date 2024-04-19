@@ -29,7 +29,20 @@ const q = useQuasar()
 const store = useNetworksStore();
 
 const setSelectedNetwork = (name: string) => {
-  store.setSelected(name)
+  try {
+    store.setSelected(name + '1')
+    q.notify({
+      type: 'info',
+      message: `<strong>${name}</strong> network selected`,
+      html: true
+    })
+  } catch (error) {
+    q.notify({
+      type: 'negative',
+      message: `Failed to select <strong>${name}</strong> network. ${error}`,
+      html: true
+    })
+  }
 }
 
 const showNewNetworkDialog = () => {

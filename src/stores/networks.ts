@@ -30,12 +30,11 @@ export const useNetworksStore = defineStore('networks', {
   },
   actions: {
     setSelected(name: string) {
-      console.log('here');
       const network = this.getByName(name);
       if (network) {
         this.selected = network;
       } else {
-        console.log(`Failed to find ${name} in networks!`);
+        throw new Error(`No network named ${name}`);
       }
     },
     addNetwork(name: string, url: string, chainId: number) {
