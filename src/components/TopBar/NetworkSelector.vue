@@ -1,23 +1,34 @@
 <template>
-  <q-btn dense flat icon="dns">
-    <span v-if="store.selected">{{ store.selected.name }}</span>
-    <span v-else>Network</span>
-    <q-icon name="arrow_drop_down" size="16px" />
+  <q-btn-dropdown dense flat icon="dns" :label="store.selected?store.selected.name:'Network'">
+    <q-list dense>
+      <q-item clickable v-close-popup v-for="network in store.networks" :key="network.name">
+        <q-item-section @click="setSelectedNetwork(network.name)">
+          <q-item-label>
+            <span class="text-bold">{{ network.name }}</span>
+            <span class="text-grey-5 text-caption"> ({{ network.chainId }})</span>
+          </q-item-label>
+          <q-item-label caption>
+            {{ network.url }}
+          </q-item-label>
+        </q-item-section>
+        <q-item-section top side>
+          <div class="text-grey-8 q-gutter-xs">
+            <q-btn class="gt-xs" size="12px" flat dense round icon="delete" />
+            <q-btn class="gt-xs" size="12px" flat dense round icon="edit" />
+          </div>
+        </q-item-section>
 
-    <q-menu auto-close>
-      <q-list dense>
-        <q-item clickable @click="showNewNetworkDialog">
-          <q-item-section>
-            Add new network
-          </q-item-section>
-        </q-item>
-        <q-separator />
-        <q-item clickable v-for="network in store.networks" :key="network.name" @click="setSelectedNetwork(network.name)">
-          <q-item-section>{{ network.name }}</q-item-section>
-        </q-item>
-      </q-list>
-    </q-menu>
-  </q-btn>
+      </q-item>
+      <q-separator />
+      <q-item clickable @click="showNewNetworkDialog">
+        <q-item-section>
+          <span class="text-bold">
+          <q-icon name="add_circle" size="sm"/> Add New
+          </span>
+        </q-item-section>
+      </q-item>
+    </q-list>
+  </q-btn-dropdown>
 </template>
 
 <script setup lang="ts">
