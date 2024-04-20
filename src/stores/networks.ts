@@ -47,6 +47,17 @@ export const useNetworksStore = defineStore('networks', {
         chainId,
       });
     },
+    deleteNetwork(name: string) {
+      const network = this.getByName(name);
+      if (network === undefined) {
+        throw new Error('Network not found.');
+      } else if (this.selected && network.name === this.selected.name) {
+        throw new Error('Not possible to delete currently selected network.');
+      } else {
+        this.networks;
+      }
+      this.networks = this.networks.filter((network) => network.name !== name);
+    },
   },
 });
 
