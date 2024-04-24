@@ -44,7 +44,7 @@
 import { useQuasar } from 'quasar';
 import UnitsConverter from '../Tools/UnitsConverter.vue';
 import AddressConverter from '../Tools/AddressConverter.vue';
-import CreateKeystoreFile from '../Tools/CreateKeystoreFile.vue';
+import GenerateKeystoreFileDialog from '../Tools/GenerateKeystoreFileDialog.vue';
 
 const q = useQuasar()
 
@@ -62,7 +62,7 @@ function showAddressConvertor() {
 
 function showKeystoreGenerator() {
   q.dialog({
-    component: CreateKeystoreFile,
+    component: GenerateKeystoreFileDialog,
   })
 }
 
