@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { Zilliqa } from '@zilliqa-js/zilliqa';
 
 export const useNetworksStore = defineStore('networks', {
   state: () => ({
@@ -20,12 +21,13 @@ export const useNetworksStore = defineStore('networks', {
       },
     ] as Network[],
     selected: null as null | Network,
+    zilliqa: null as null | Zilliqa,
   }),
   getters: {
     getByName:
       (state) =>
       (name: string): Network | undefined => {
-        return state.networks.find((item: Network) => item.name === name);
+        return state.networks.find((network: Network) => network.name === name);
       },
   },
   actions: {
@@ -33,6 +35,7 @@ export const useNetworksStore = defineStore('networks', {
       const network = this.getByName(name);
       if (network) {
         this.selected = network;
+        this.zilliqa = new Zilliqa(network.url);
       } else {
         throw new Error(`No network named ${name}`);
       }

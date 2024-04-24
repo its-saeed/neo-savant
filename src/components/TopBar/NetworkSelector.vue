@@ -1,20 +1,37 @@
 <template>
-  <q-btn-dropdown dense flat icon="dns" :label="store.selected?store.selected.name:'Network'">
+  <q-btn-dropdown
+    dense
+    icon="dns"
+    color="blue-grey-9"
+    unelevated
+    :label="store.selected ? store.selected.name : 'Select a Network'"
+  >
     <q-list dense>
       <q-item-label header class="bg-grey-3 text-bold text-uppercase">
         <div class="row q-gutter-xs items-center justify-between">
           <span>Networks</span>
           <div>
-            <q-btn v-close-popup class="gt-xs" size="14px" label="Add" flat dense icon="add_circle_outline" @click="showNewNetworkDialog">
-              <q-tooltip>
-                Add new network
-              </q-tooltip>
+            <q-btn
+              v-close-popup
+              class="gt-xs"
+              size="14px"
+              label="Add"
+              flat
+              dense
+              icon="add_circle_outline"
+              @click="showNewNetworkDialog"
+            >
+              <q-tooltip> Add new network </q-tooltip>
             </q-btn>
           </div>
         </div>
       </q-item-label>
       <div v-for="network in store.networks" :key="network.name">
-        <q-item clickable v-close-popup :active="store.selected?.name === network.name">
+        <q-item
+          clickable
+          v-close-popup
+          :active="store.selected?.name === network.name"
+        >
           <q-item-section @click="setSelectedNetwork(network.name)">
             <q-item-label>
               <span class="text-bold">{{ network.name }}</span>
@@ -25,7 +42,15 @@
           </q-item-section>
           <q-item-section top side>
             <div class="text-grey-8 q-gutter-xs">
-              <q-btn class="gt-xs" size="10px" flat dense round icon="delete" @click="deleteNetwork(network.name)" />
+              <q-btn
+                class="gt-xs"
+                size="10px"
+                flat
+                dense
+                round
+                icon="delete"
+                @click="deleteNetwork(network.name)"
+              />
               <q-btn class="gt-xs" size="10px" flat dense round icon="edit" />
             </div>
           </q-item-section>
@@ -37,29 +62,29 @@
 </template>
 
 <script setup lang="ts">
-import NewNetworkDialog from './NewNetworkDialog.vue'
-import {useNetworksStore} from 'stores/networks'
+import NewNetworkDialog from './NewNetworkDialog.vue';
+import { useNetworksStore } from 'stores/networks';
 import { useQuasar } from 'quasar';
 
-const q = useQuasar()
+const q = useQuasar();
 const store = useNetworksStore();
 
 const setSelectedNetwork = (name: string) => {
   try {
-    store.setSelected(name)
+    store.setSelected(name);
     q.notify({
       type: 'info',
       message: `<strong>${name}</strong> network selected`,
-      html: true
-    })
+      html: true,
+    });
   } catch (error) {
     q.notify({
       type: 'negative',
       message: `Failed to select <strong>${name}</strong> network. ${error}`,
-      html: true
-    })
+      html: true,
+    });
   }
-}
+};
 
 const deleteNetwork = (name: string) => {
   q.dialog({
@@ -69,30 +94,27 @@ const deleteNetwork = (name: string) => {
     cancel: true,
   }).onOk(() => {
     try {
-      store.deleteNetwork(name)
+      store.deleteNetwork(name);
       q.notify({
         type: 'info',
         message: `<strong>${name}</strong> network deleted.`,
-        html: true
-      })
+        html: true,
+      });
     } catch (error) {
       q.notify({
         type: 'negative',
         message: `Failed to delete <strong>${name}</strong> network. ${error}`,
-        html: true
-      })
+        html: true,
+      });
     }
-  })
-}
+  });
+};
 
 const showNewNetworkDialog = () => {
   q.dialog({
     component: NewNetworkDialog,
-  })
-}
-
+  });
+};
 </script>
 
-<style lang="">
-</style>
-
+<style lang=""></style>
