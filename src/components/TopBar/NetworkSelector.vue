@@ -1,6 +1,18 @@
 <template>
   <q-btn-dropdown dense flat icon="dns" :label="store.selected?store.selected.name:'Network'">
     <q-list dense>
+      <q-item-label header class="bg-grey-3 text-bold text-uppercase">
+        <div class="row q-gutter-xs items-center justify-between">
+          <span>Networks</span>
+          <div>
+            <q-btn v-close-popup class="gt-xs" size="14px" label="Add" flat dense icon="add_circle_outline" @click="showNewNetworkDialog">
+              <q-tooltip>
+                Add new network
+              </q-tooltip>
+            </q-btn>
+          </div>
+        </div>
+      </q-item-label>
       <div v-for="network in store.networks" :key="network.name">
         <q-item clickable v-close-popup :active="store.selected?.name === network.name">
           <q-item-section @click="setSelectedNetwork(network.name)">
@@ -17,18 +29,9 @@
               <q-btn class="gt-xs" size="10px" flat dense round icon="edit" />
             </div>
           </q-item-section>
-
         </q-item>
         <q-separator />
       </div>
-      <q-separator />
-      <q-item clickable v-close-popup @click="showNewNetworkDialog">
-        <q-item-section>
-          <span class="text-bold">
-          <q-icon name="add_circle" size="sm"/> Add New
-          </span>
-        </q-item-section>
-      </q-item>
     </q-list>
   </q-btn-dropdown>
 </template>
