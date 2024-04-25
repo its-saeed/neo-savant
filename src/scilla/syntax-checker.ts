@@ -17,6 +17,7 @@ export const scillaCheck = async (code: string): Promise<Response> => {
     if (axios.isAxiosError(error) && error.response) {
       return { errors: error.response.data.message };
     } else {
+      // TODO: Throw an error 
       console.error('Not a valid error from scilla-check');
     }
   }

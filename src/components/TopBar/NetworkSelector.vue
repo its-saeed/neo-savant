@@ -4,6 +4,7 @@
     icon="dns"
     color="blue-grey-9"
     unelevated
+    no-caps
     :label="store.selected ? store.selected.name : 'Select a Network'"
   >
     <q-list dense>

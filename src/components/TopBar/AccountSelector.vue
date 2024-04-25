@@ -4,7 +4,7 @@
     color="blue-grey-9"
     unelevated
     split
-    :disable-main-btn="store.selected === null"
+    no-caps
     @click="refreshSelectedAccountBalance"
   >
     <template v-slot:label>
@@ -21,7 +21,7 @@
           />
         </q-badge>
       </template>
-      <div v-else>Select an account</div>
+      <div v-else>Import an Account</div>
     </template>
 
     <q-list bordered separator>
@@ -45,7 +45,7 @@
         </div>
       </q-item-label>
       <div v-if="store.accounts.length > 0">
-        <div v-for="account in store.accounts" :key="account.name">
+        <div v-for="account in store.accountsForCurrentNetwork" :key="account.name">
           <q-item clickable :active="store.selected?.name === account.name">
             <q-item-section @click="selectAccount(account.name)" v-close-popup>
               <q-item-label>

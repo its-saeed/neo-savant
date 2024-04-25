@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
-import { Zilliqa } from '@zilliqa-js/zilliqa';
+import { Zilliqa, bytes } from '@zilliqa-js/zilliqa';
+import { useAccountsStore } from './accounts';
 
 export const useNetworksStore = defineStore('networks', {
   state: () => ({
@@ -8,34 +9,47 @@ export const useNetworksStore = defineStore('networks', {
         name: 'Simulated ENV',
         url: 'https://scilla-server.zilliqa.com/contract/check',
         chainId: 222,
+        msgVersion: 1,
+        zilliqa: new Zilliqa(
+          'https://scilla-server.zilliqa.com/contract/check'
+        ),
       },
       {
         name: 'Testnet',
         url: 'https://dev-api.zilliqa.com',
         chainId: 333,
+        msgVersion: 1,
+        zilliqa: new Zilliqa('https://dev-api.zilliqa.com'),
       },
       {
         name: 'Mainnet',
         url: 'https://api.zilliqa.com',
         chainId: 1,
+        msgVersion: 1,
+        zilliqa: new Zilliqa('https://api.zilliqa.com'),
       },
     ] as Network[],
     selected: null as null | Network,
-    zilliqa: null as null | Zilliqa,
   }),
   getters: {
-    getByName:
-      (state) =>
-      (name: string): Network | undefined => {
-        return state.networks.find((network: Network) => network.name === name);
-      },
+    getVersion(): number {
+      if (this.selected === null) {
+        throw new Error('No notwork selected!');
+      }
+
+      return bytes.pack(this.selected.chainId, this.selected.msgVersion);
+    },
+    getByName: (state) => (name: string) => {
+      return state.networks.find((network) => network.name === name);
+    },
   },
   actions: {
     setSelected(name: string) {
       const network = this.getByName(name);
       if (network) {
+        const accountsStore = useAccountsStore();
+        accountsStore.selected = null;
         this.selected = network;
-        this.zilliqa = new Zilliqa(network.url);
       } else {
         throw new Error(`No network named ${name}`);
       }
@@ -48,6 +62,8 @@ export const useNetworksStore = defineStore('networks', {
         name,
         url,
         chainId,
+        msgVersion: 1,
+        zilliqa: new Zilliqa(url),
       });
     },
     deleteNetwork(name: string) {
@@ -68,4 +84,6 @@ interface Network {
   name: string;
   url: string;
   chainId: number;
+  msgVersion: number;
+  zilliqa: Zilliqa;
 }

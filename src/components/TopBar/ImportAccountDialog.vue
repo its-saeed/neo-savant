@@ -1,6 +1,11 @@
 <template>
-  <q-dialog v-model="show" :persistent="false" :no-esc-dismiss="false" backdrop-filter="blur(4px)">
-    <q-card style="width: 400px; max-width: 80vw;">
+  <q-dialog
+    v-model="show"
+    :persistent="false"
+    :no-esc-dismiss="false"
+    backdrop-filter="blur(4px)"
+  >
+    <q-card style="width: 400px; max-width: 80vw">
       <q-tabs
         v-model="tab"
         dense
@@ -18,15 +23,40 @@
 
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="keystore">
-          <div class="text-h6">Import Keystore File</div>
+          <div class="text-h6 q-mb-sm">Import Keystore File</div>
           <div class="column q-gutter-md">
-            <q-input class="col" label="Name" v-model="accountName" />
-            <q-file v-model="keystoreFile" label="Pick a keystore file" />
-            <q-input class="col" label="Passphrase" type="password" v-model="secret" />
-            <div class="col row">
-              <q-space/>
-              <q-btn class="col-4" type="submit" color="primary" @click="load">Import</q-btn>
-            </div>
+            <q-input
+              filled
+              dense
+              class="col"
+              label="Name"
+              v-model="accountName"
+            />
+            <q-select
+              filled
+              multiple
+              dense
+              use-chips
+              stack-label
+              class="col"
+              label="Add to"
+              v-model="forNetworks"
+              :options="networkNames"
+            />
+            <q-file
+              filled
+              dense
+              v-model="keystoreFile"
+              label="Pick a keystore file"
+            />
+            <q-input
+              filled
+              dense
+              class="col"
+              label="Passphrase"
+              type="password"
+              v-model="secret"
+            />
           </div>
         </q-tab-panel>
 
@@ -41,56 +71,66 @@
         </q-tab-panel>
       </q-tab-panels>
 
-      <q-card-section class="q-pt-none">
-      </q-card-section>
+      <q-separator />
+      <q-card-actions align="right" class="bg-grey-2">
+        <q-btn no-caps flat color="primary" @click="load">Import</q-btn>
+      </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
 
 <script setup lang="ts">
 import { Account } from '@zilliqa-js/account';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useQuasar } from 'quasar';
-import {useAccountsStore} from 'stores/accounts'
+import { useAccountsStore } from 'stores/accounts';
+import { useNetworksStore } from 'stores/networks';
 
 const secret = ref('');
-const keystoreFile = ref<File | null >(null)
-const accountName = ref('Account 1')
+const keystoreFile = ref<File | null>(null);
+const accountName = ref('Account 1');
 const q = useQuasar();
 const store = useAccountsStore();
-const show = ref(true)
+const networksStore = useNetworksStore();
+const show = ref(true);
 const tab = ref('keystore');
+const forNetworks = ref<string[]>(networksStore.selected === null ? [] : [networksStore.selected.name]);
+const networkNames = computed(() => {
+  return networksStore.networks.map((network) => network.name);
+});
 
 const load = async () => {
   if (keystoreFile.value == null) {
     q.notify({
       type: 'warning',
-      message: 'Please select a valid keystore file.'
-    })
+      message: 'Please select a valid keystore file.',
+    });
     return;
   }
 
-  const keystore = await readUploadedFileAsText(keystoreFile.value)
+  const keystore = await readUploadedFileAsText(keystoreFile.value);
   try {
-    const account = await Account.fromFile(keystore.toString(), secret.value)
-    store.add(accountName.value, account.address, {
-      keystoreFile: keystoreFile.value
+    const account = await Account.fromFile(keystore.toString(), secret.value);
+    store.add(accountName.value, account.address, forNetworks.value, {
+      keystoreFile: keystoreFile.value,
     });
     q.notify({
       type: 'info',
-      message: `${account.address} imported successfully.`
-    })
+      message: `${account.address} imported successfully.`,
+    });
     show.value = false;
   } catch (error) {
     q.notify({
       type: 'negative',
-      message: `Failed to import. ${error}`
-    })
+      message: `Failed to import. ${error}`,
+    });
   }
-}
+};
 
-const readUploadedFileAsText = async (inputFile: File): Promise<string | ArrayBuffer> => {
-  console.log(inputFile)
+const readUploadedFileAsText = async (
+  inputFile: File
+): Promise<string | ArrayBuffer> => {
+  console.log(inputFile);
   const temporaryFileReader = new FileReader();
 
   return new Promise((resolve, reject) => {
@@ -106,7 +146,5 @@ const readUploadedFileAsText = async (inputFile: File): Promise<string | ArrayBu
     };
     temporaryFileReader.readAsText(inputFile);
   });
-}
-
+};
 </script>
-

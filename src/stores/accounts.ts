@@ -8,11 +8,17 @@ export const useAccountsStore = defineStore('accounts', {
     selected: null as null | Account,
   }),
   actions: {
-    add(name: string, address: string, account: KeystoreAccount) {
+    add(
+      name: string,
+      address: string,
+      networks: string[],
+      account: KeystoreAccount
+    ) {
       this.accounts.push({
         name,
         address,
         account,
+        networks,
         balance: '0',
         balanceRefreshInProgress: false,
       });
@@ -33,8 +39,7 @@ export const useAccountsStore = defineStore('accounts', {
       const networks = useNetworksStore();
       account.balanceRefreshInProgress = true;
       try {
-        networks.zilliqa?.blockchain.getBalance(account.address);
-        const balance = await networks.zilliqa?.blockchain.getBalance(
+        const balance = await networks.selected?.zilliqa?.blockchain.getBalance(
           account.address
         );
         if (
@@ -61,6 +66,16 @@ export const useAccountsStore = defineStore('accounts', {
       (name: string): Account | undefined => {
         return state.accounts.find((item: Account) => item.name === name);
       },
+    accountsForCurrentNetwork(state): Account[] {
+      const networks = useNetworksStore();
+      if (networks.selected !== null) {
+        const selectedNetworkName = networks.selected.name;
+        return state.accounts.filter((account) =>
+          account.networks.includes(selectedNetworkName)
+        );
+      }
+      return [];
+    },
   },
 });
 
@@ -70,6 +85,7 @@ interface Account {
   balance: string;
   balanceRefreshInProgress: boolean;
   account: KeystoreAccount;
+  networks: string[];
 }
 
 export interface KeystoreAccount {
