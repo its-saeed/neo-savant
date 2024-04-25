@@ -10,9 +10,11 @@
           <q-input class="col" type="number" label="Zil" v-model="zil" @change="handleChangeZil"/>
           <q-input class="col" type="number" label="Li" v-model="li" @change="handleChangeLi"/>
           <q-input class="col" type="number" label="Qa" v-model="qa" @change="handleChangeQa"/>
-          <q-btn class="col" type="primary" color="primary">Convert</q-btn>
         </div>
       </q-card-section>
+      <q-card-actions align="right" class="bg-grey-2">
+        <q-btn no-caps flat color="primary" @click="handleConversion">Convert</q-btn>
+      </q-card-actions>
     </q-card>
   </q-dialog>
 </template>

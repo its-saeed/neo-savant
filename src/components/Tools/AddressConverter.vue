@@ -7,14 +7,17 @@
 
       <q-card-section class="q-pt-none">
         <div class="column q-gutter-md">
-          <q-input class="col" label="Bech32 Address" v-model="bech32"/>
-          <q-input class="col" label="Base16 Address" v-model="base16" />
+          <q-input dense filled class="col" label="Bech32 Address" v-model="bech32"/>
+          <q-input dense filled class="col" label="Base16 Address" v-model="base16" />
           <div class="col row">
             <q-space/>
-            <q-btn class="col-2" type="primary" color="primary" @click="handleConversion">Convert</q-btn>
           </div>
         </div>
       </q-card-section>
+      <q-separator/>
+      <q-card-actions align="right" class="bg-grey-2">
+        <q-btn no-caps flat color="primary" @click="handleConversion">Convert</q-btn>
+      </q-card-actions>
     </q-card>
   </q-dialog>
 </template>

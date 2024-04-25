@@ -7,13 +7,16 @@
 
       <q-card-section class="q-pt-none">
         <div class="column q-gutter-md">
-          <q-input class="col" label="Passphrase" type="password" v-model="secret" />
+          <q-input filled dense class="col" label="Passphrase" type="password" v-model="secret" />
           <div class="col row">
             <q-space/>
-            <q-btn class="col-4" type="submit" color="primary" @click="generateKeystore">Generate</q-btn>
           </div>
         </div>
       </q-card-section>
+      <q-separator/>
+      <q-card-actions align="right" class="bg-grey-2">
+        <q-btn no-caps flat color="primary" @click="generateKeystore">Generate</q-btn>
+      </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
