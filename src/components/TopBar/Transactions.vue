@@ -8,9 +8,11 @@
     label="Transactions"
   >
     <q-list dense>
-      <div v-for="transaction in blockchainStore.transactions" :key="transaction.id">
-        <q-item
-        >
+      <div
+        v-for="transaction in blockchainStore.transactions"
+        :key="transaction.id"
+      >
+        <q-item>
           <q-item-section>
             <q-item-label>
               <div class="q-gutter-sm row items-center">
@@ -20,11 +22,14 @@
                 <q-badge color="primary" class="text-bold">
                   {{ transaction.network }}
                 </q-badge>
-                <q-badge :color="txStatusColor(transaction.statusMessage)" class="q-ml-sm text-bold">
+                <q-badge
+                  :color="txStatusColor(transaction.statusMessage)"
+                  class="q-ml-sm text-bold"
+                >
                   {{ transaction.statusMessage }}
                 </q-badge>
-                <q-space/>
-                <transaction-status-refresher-btn :tx-hash="transaction.id"/>
+                <q-space />
+                <transaction-status-refresher-btn :tx-hash="transaction.id" />
               </div>
             </q-item-label>
           </q-item-section>
@@ -51,6 +56,5 @@ const txStatusColor = (statusMessage: string) => {
     case 'Rejected':
       return 'red';
   }
-}
-
+};
 </script>

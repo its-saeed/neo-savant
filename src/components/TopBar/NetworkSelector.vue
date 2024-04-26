@@ -5,7 +5,11 @@
     color="blue-grey-9"
     unelevated
     no-caps
-    :label="blockchainStore.selectedNetwork ? blockchainStore.selectedNetwork.name : 'Select a Network'"
+    :label="
+      blockchainStore.selectedNetwork
+        ? blockchainStore.selectedNetwork.name
+        : 'Select a Network'
+    "
   >
     <q-list dense>
       <q-item-label header class="bg-grey-3 text-bold text-uppercase">

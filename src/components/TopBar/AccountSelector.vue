@@ -15,7 +15,8 @@
           {{ blockchainStore.selectedAccount?.balance }} ZIL
           <q-spinner
             v-if="
-              blockchainStore.selectedAccount && blockchainStore.selectedAccount.balanceRefreshInProgress
+              blockchainStore.selectedAccount &&
+              blockchainStore.selectedAccount.balanceRefreshInProgress
             "
             size="12px"
           />
@@ -45,8 +46,14 @@
         </div>
       </q-item-label>
       <div v-if="accountsStore.accountsForCurrentNetwork.length > 0">
-        <div v-for="account in accountsStore.accountsForCurrentNetwork" :key="account.name">
-          <q-item clickable :active="blockchainStore.selectedAccount?.name === account.name">
+        <div
+          v-for="account in accountsStore.accountsForCurrentNetwork"
+          :key="account.name"
+        >
+          <q-item
+            clickable
+            :active="blockchainStore.selectedAccount?.name === account.name"
+          >
             <q-item-section @click="selectAccount(account.name)" v-close-popup>
               <q-item-label>
                 <span class="text-bold q-mr-sm">{{ account.name }}</span>

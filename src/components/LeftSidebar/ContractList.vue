@@ -24,7 +24,6 @@ const scillaFiles = ref([
   'ECDSATest.scilla',
   'AsciiArt.scilla',
 ]);
-
 </script>
 
 <style lang=""></style>

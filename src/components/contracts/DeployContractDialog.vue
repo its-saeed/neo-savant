@@ -54,10 +54,12 @@
         </div>
         <q-skeleton v-else type="QInput" />
       </q-card-section>
-      <q-separator/>
+      <q-separator />
       <q-card-actions class="bg-grey-2">
-        <q-btn no-caps flat icon="upload" color="primary" @click="deploy">Deploy</q-btn>
-        <q-space/>
+        <q-btn no-caps flat icon="upload" color="primary" @click="deploy"
+          >Deploy</q-btn
+        >
+        <q-space />
         <q-btn no-caps flat icon="delete_forever" color="red">Reset</q-btn>
         <q-btn no-caps flat icon="close" color="warning">Cancel</q-btn>
       </q-card-actions>
@@ -84,7 +86,7 @@ onMounted(async () => {
   console.log(abi.value);
 
   try {
-    const price = await blockchainStore.minimumGasPrice || '0';
+    const price = (await blockchainStore.minimumGasPrice) || '0';
     gasPrice.value = parseInt(price);
   } catch (error) {
     gasPrice.value = 0;
@@ -94,7 +96,6 @@ onMounted(async () => {
 const props = defineProps(['file', 'code']);
 
 const deploy = () => {
-  return
-}
-
+  return;
+};
 </script>

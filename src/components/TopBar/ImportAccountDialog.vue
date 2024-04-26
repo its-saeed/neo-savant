@@ -96,7 +96,11 @@ const networksStore = useNetworksStore();
 const blockchainStore = useBlockchainStore();
 const show = ref(true);
 const tab = ref('keystore');
-const forNetworks = ref<string[]>(blockchainStore.selectedNetwork === null ? [] : [blockchainStore.selectedNetwork.name]);
+const forNetworks = ref<string[]>(
+  blockchainStore.selectedNetwork === null
+    ? []
+    : [blockchainStore.selectedNetwork.name]
+);
 const networkNames = computed(() => {
   return networksStore.networks.map((network) => network.name);
 });
@@ -115,7 +119,7 @@ const load = async () => {
     const account = await Account.fromFile(keystore.toString(), secret.value);
     store.add(accountName.value, account.address, forNetworks.value, {
       keystore: keystore.toString(),
-      passphrase: secret.value
+      passphrase: secret.value,
     });
     q.notify({
       type: 'info',

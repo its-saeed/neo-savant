@@ -14,7 +14,11 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { eventBus } from 'src/event-bus';
-import { ContractInfo, scillaDefaultContracts, getContractById } from '../../contracts';
+import {
+  ContractInfo,
+  scillaDefaultContracts,
+  getContractById,
+} from '../../contracts';
 
 const selected = ref('');
 
@@ -29,7 +33,7 @@ const fileNodes = computed(() => {
         label: contract.name,
         key: contract.id,
         icon: 'description',
-        iconColor: 'grey-7'
+        iconColor: 'grey-7',
       })),
     },
     {
@@ -46,7 +50,7 @@ function change(target: string) {
   if (contract) {
     eventBus.emit('contract-selected', contract);
   } else {
-    console.error(`Failed to find ${target} in default contracts`)
+    console.error(`Failed to find ${target} in default contracts`);
   }
 }
 </script>

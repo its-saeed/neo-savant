@@ -1,5 +1,10 @@
 <template>
-  <q-input filled dense :label="`${props.vname}: ${props.type}`" :type="quasarType">
+  <q-input
+    filled
+    dense
+    :label="`${props.vname}: ${props.type}`"
+    :type="quasarType"
+  >
     <template v-slot:append>
       <q-btn round flat dense icon="help">
         <q-popup-proxy>
@@ -39,7 +44,7 @@ const quasarType = computed(() => {
     case 'String':
       return 'text';
     case 'Uint':
-      return 'number'
+      return 'number';
     default:
       console.log(`Unknown type: ${type}`);
       return 'text';

@@ -4,18 +4,26 @@
       <q-menu auto-close>
         <q-list dense>
           <q-item clickable>
-            <q-item-section @click="showAddressConvertor">Address Convertor</q-item-section>
+            <q-item-section @click="showAddressConvertor"
+              >Address Convertor</q-item-section
+            >
           </q-item>
           <q-item clickable>
-            <q-item-section @click="showUnitConvertor()">Units Convertor</q-item-section>
+            <q-item-section @click="showUnitConvertor()"
+              >Units Convertor</q-item-section
+            >
           </q-item>
           <q-separator />
           <q-item clickable>
-            <q-item-section @click="showTransferZilDialog()">Transfer Zil</q-item-section>
+            <q-item-section @click="showTransferZilDialog()"
+              >Transfer Zil</q-item-section
+            >
           </q-item>
           <q-separator />
           <q-item clickable>
-            <q-item-section @click="showKeystoreGenerator()">Create keystore file</q-item-section>
+            <q-item-section @click="showKeystoreGenerator()"
+              >Create keystore file</q-item-section
+            >
           </q-item>
         </q-list>
       </q-menu>
@@ -37,7 +45,6 @@
         </q-list>
       </q-menu>
     </q-btn>
-
   </q-bar>
 </template>
 <script setup lang="ts">
@@ -47,33 +54,30 @@ import AddressConverter from '../Tools/AddressConverter.vue';
 import GenerateKeystoreFileDialog from '../Tools/GenerateKeystoreFileDialog.vue';
 import TransferZilDialog from '../Tools/TransferZilDialog.vue';
 
-const q = useQuasar()
+const q = useQuasar();
 
 function showUnitConvertor() {
   q.dialog({
     component: UnitsConverter,
-  })
+  });
 }
 
 function showAddressConvertor() {
   q.dialog({
     component: AddressConverter,
-  })
+  });
 }
 
 function showKeystoreGenerator() {
   q.dialog({
     component: GenerateKeystoreFileDialog,
-  })
+  });
 }
 
 function showTransferZilDialog() {
   q.dialog({
     component: TransferZilDialog,
-  })
+  });
 }
-
 </script>
-<style lang="">
-
-</style>
+<style lang=""></style>
