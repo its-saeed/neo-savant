@@ -11,7 +11,7 @@
           </q-item>
           <q-separator />
           <q-item clickable>
-            <q-item-section>Transfer Zil</q-item-section>
+            <q-item-section @click="showTransferZilDialog()">Transfer Zil</q-item-section>
           </q-item>
           <q-separator />
           <q-item clickable>
@@ -45,6 +45,7 @@ import { useQuasar } from 'quasar';
 import UnitsConverter from '../Tools/UnitsConverter.vue';
 import AddressConverter from '../Tools/AddressConverter.vue';
 import GenerateKeystoreFileDialog from '../Tools/GenerateKeystoreFileDialog.vue';
+import TransferZilDialog from '../Tools/TransferZilDialog.vue';
 
 const q = useQuasar()
 
@@ -63,6 +64,12 @@ function showAddressConvertor() {
 function showKeystoreGenerator() {
   q.dialog({
     component: GenerateKeystoreFileDialog,
+  })
+}
+
+function showTransferZilDialog() {
+  q.dialog({
+    component: TransferZilDialog,
   })
 }
 
