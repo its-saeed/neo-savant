@@ -85,6 +85,7 @@ import { ref, computed } from 'vue';
 import { useQuasar } from 'quasar';
 import { useAccountsStore } from 'stores/accounts';
 import { useNetworksStore } from 'stores/networks';
+import { useBlockchainStore } from 'src/stores/blockchain';
 
 const secret = ref('');
 const keystoreFile = ref<File | null>(null);
@@ -92,9 +93,10 @@ const accountName = ref('Account 1');
 const q = useQuasar();
 const store = useAccountsStore();
 const networksStore = useNetworksStore();
+const blockchainStore = useBlockchainStore();
 const show = ref(true);
 const tab = ref('keystore');
-const forNetworks = ref<string[]>(networksStore.selected === null ? [] : [networksStore.selected.name]);
+const forNetworks = ref<string[]>(blockchainStore.selectedNetwork === null ? [] : [blockchainStore.selectedNetwork.name]);
 const networkNames = computed(() => {
   return networksStore.networks.map((network) => network.name);
 });
@@ -112,7 +114,8 @@ const load = async () => {
   try {
     const account = await Account.fromFile(keystore.toString(), secret.value);
     store.add(accountName.value, account.address, forNetworks.value, {
-      keystoreFile: keystoreFile.value,
+      keystore: keystore.toString(),
+      passphrase: secret.value
     });
     q.notify({
       type: 'info',

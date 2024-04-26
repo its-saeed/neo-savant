@@ -9,13 +9,13 @@
   >
     <template v-slot:label>
       <q-icon left name="wallet" />
-      <template v-if="store.selected">
-        {{ store.selected?.name }}
+      <template v-if="blockchainStore.selectedAccount">
+        {{ blockchainStore.selectedAccount?.name }}
         <q-badge color="orange" class="text-bold q-ml-sm">
-          {{ store.selected?.balance }} ZIL
+          {{ blockchainStore.selectedAccount?.balance }} ZIL
           <q-spinner
             v-if="
-              store.selected !== null && store.selected.balanceRefreshInProgress
+              blockchainStore.selectedAccount && blockchainStore.selectedAccount.balanceRefreshInProgress
             "
             size="12px"
           />
@@ -44,9 +44,9 @@
           </div>
         </div>
       </q-item-label>
-      <div v-if="store.accounts.length > 0">
-        <div v-for="account in store.accountsForCurrentNetwork" :key="account.name">
-          <q-item clickable :active="store.selected?.name === account.name">
+      <div v-if="accountsStore.accountsForCurrentNetwork.length > 0">
+        <div v-for="account in accountsStore.accountsForCurrentNetwork" :key="account.name">
+          <q-item clickable :active="blockchainStore.selectedAccount?.name === account.name">
             <q-item-section @click="selectAccount(account.name)" v-close-popup>
               <q-item-label>
                 <span class="text-bold q-mr-sm">{{ account.name }}</span>
@@ -115,10 +115,12 @@ import { useAccountsStore } from 'stores/accounts';
 import { useQuasar } from 'quasar';
 import { copyToClipboard } from 'quasar';
 import { ref } from 'vue';
+import { useBlockchainStore } from 'src/stores/blockchain';
 
 const q = useQuasar();
-const store = useAccountsStore();
 const addressCopiedToClipboard = ref(false);
+const blockchainStore = useBlockchainStore();
+const accountsStore = useAccountsStore();
 
 const importKeystore = () => {
   q.dialog({
@@ -128,7 +130,7 @@ const importKeystore = () => {
 
 const selectAccount = (name: string) => {
   try {
-    store.setSelected(name);
+    blockchainStore.setSelectedAccount(name);
     q.notify({
       type: 'info',
       message: `<strong>${name}</strong> account selected`,
@@ -145,18 +147,14 @@ const selectAccount = (name: string) => {
 
 const refreshBalance = (address: string) => {
   try {
-    store.refreshBalance(address);
+    accountsStore.refreshBalance(address);
   } catch (error) {}
   return;
 };
 
 const refreshSelectedAccountBalance = () => {
-  if (store.selected === null) {
-    return;
-  }
-
   try {
-    store.refreshBalance(store.selected.name);
+    blockchainStore.refreshSelectedAccountBalance();
   } catch (error) {}
   return;
 };

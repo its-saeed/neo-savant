@@ -5,7 +5,7 @@
     color="blue-grey-9"
     unelevated
     no-caps
-    :label="store.selected ? store.selected.name : 'Select a Network'"
+    :label="blockchainStore.selectedNetwork ? blockchainStore.selectedNetwork.name : 'Select a Network'"
   >
     <q-list dense>
       <q-item-label header class="bg-grey-3 text-bold text-uppercase">
@@ -27,11 +27,11 @@
           </div>
         </div>
       </q-item-label>
-      <div v-for="network in store.networks" :key="network.name">
+      <div v-for="network in networksStore.networks" :key="network.name">
         <q-item
           clickable
           v-close-popup
-          :active="store.selected?.name === network.name"
+          :active="blockchainStore.selectedNetwork?.name === network.name"
         >
           <q-item-section @click="setSelectedNetwork(network.name)">
             <q-item-label>
@@ -65,14 +65,16 @@
 <script setup lang="ts">
 import NewNetworkDialog from './NewNetworkDialog.vue';
 import { useNetworksStore } from 'stores/networks';
+import { useBlockchainStore } from 'src/stores/blockchain';
 import { useQuasar } from 'quasar';
 
 const q = useQuasar();
-const store = useNetworksStore();
+const networksStore = useNetworksStore();
+const blockchainStore = useBlockchainStore();
 
 const setSelectedNetwork = (name: string) => {
   try {
-    store.setSelected(name);
+    blockchainStore.setSelectedNetwork(name);
     q.notify({
       type: 'info',
       message: `<strong>${name}</strong> network selected`,
@@ -95,7 +97,7 @@ const deleteNetwork = (name: string) => {
     cancel: true,
   }).onOk(() => {
     try {
-      store.deleteNetwork(name);
+      networksStore.deleteNetwork(name);
       q.notify({
         type: 'info',
         message: `<strong>${name}</strong> network deleted.`,
