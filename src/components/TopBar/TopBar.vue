@@ -4,6 +4,8 @@
     <div class="text-weight-bolder text-h5">Neo Savant</div>
     <q-space />
     <div class="q-gutter-sm row items-center no-wrap">
+      <transactions></transactions>
+      <q-separator vertical dark/>
       <network-selector></network-selector>
       <account-selector></account-selector>
     </div>
@@ -12,6 +14,7 @@
 <script setup lang="ts">
 import NetworkSelector from './NetworkSelector.vue'
 import AccountSelector from './AccountSelector.vue'
+import Transactions from './Transactions.vue';
 </script>
 <style lang="">
 
