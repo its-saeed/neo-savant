@@ -2,7 +2,6 @@
   <q-btn-dropdown
     dense
     icon="dns"
-    color="blue-grey-9"
     unelevated
     no-caps
     :label="

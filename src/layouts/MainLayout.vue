@@ -18,8 +18,8 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import LeftSidebar from 'components/LeftSidebar/LeftSidebar.vue';
-import TopBar from 'src/components/TopBar/TopBar.vue';
-import MenuBar from 'src/components/MenuBar/MenuBar.vue';
+import TopBar from 'src/components/header/TopBar/TopBar.vue';
+import MenuBar from 'src/components/header/MenuBar/MenuBar.vue';
 
 const leftDrawerOpen = ref(false);
 </script>

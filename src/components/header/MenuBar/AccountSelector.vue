@@ -1,7 +1,6 @@
 <template>
   <q-btn-dropdown
     dense
-    color="blue-grey-9"
     unelevated
     split
     no-caps

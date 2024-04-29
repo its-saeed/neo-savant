@@ -1,6 +1,6 @@
 <template>
   <q-page class="column">
-    <q-bar class="bg-grey-1 text-grey-8">
+    <q-bar class="bg-grey-1 text-grey-8 q-pt-sm">
       <q-btn dense flat label="Save" no-caps icon="save" disabled />
       <q-separator vertical inset />
       <q-btn
