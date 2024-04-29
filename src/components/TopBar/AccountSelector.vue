@@ -64,17 +64,7 @@
               <q-item-label caption>
                 <div>
                   {{ account.address }}
-                  <q-btn
-                    icon="content_copy"
-                    round
-                    flat
-                    size="8px"
-                    @click.stop="copyAddressToClipboard(account.address)"
-                  >
-                    <q-tooltip>
-                      {{ addressCopiedToClipboard ? 'Copied' : 'Copy Address' }}
-                    </q-tooltip>
-                  </q-btn>
+                  <copy-to-clipboard-btn :content="account.address.toLowerCase()"/>
                 </div>
               </q-item-label>
             </q-item-section>
@@ -120,12 +110,10 @@
 import ImportAccountDialog from './ImportAccountDialog.vue';
 import { useAccountsStore } from 'stores/accounts';
 import { useQuasar } from 'quasar';
-import { copyToClipboard } from 'quasar';
-import { ref } from 'vue';
 import { useBlockchainStore } from 'src/stores/blockchain';
+import CopyToClipboardBtn from 'components/CopyToClipboardBtn.vue';
 
 const q = useQuasar();
-const addressCopiedToClipboard = ref(false);
 const blockchainStore = useBlockchainStore();
 const accountsStore = useAccountsStore();
 
@@ -164,13 +152,6 @@ const refreshSelectedAccountBalance = () => {
     blockchainStore.refreshSelectedAccountBalance();
   } catch (error) {}
   return;
-};
-
-const copyAddressToClipboard = async (address: string) => {
-  await copyToClipboard(address.toLowerCase());
-  addressCopiedToClipboard.value = true;
-  await new Promise((r) => setTimeout(r, 2000));
-  addressCopiedToClipboard.value = false;
 };
 </script>
 
