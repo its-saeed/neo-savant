@@ -9,6 +9,7 @@ export interface Network {
 }
 
 export interface Contract {
+  name: string;
   network: string;
   address: string;
   tags: Tag[];
