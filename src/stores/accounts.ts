@@ -10,12 +10,19 @@ export const useAccountsStore = defineStore('accounts', {
     add(
       name: string,
       address: string,
+      bech32Address: string,
       networks: string[],
       account: KeystoreAccount
     ) {
+      if (this.getByName(name) !== undefined) {
+        throw new Error(
+          `There is already another account with the same name, ${name}`
+        );
+      }
       this.accounts.push({
         name,
         address,
+        bech32Address,
         account,
         networks,
         balance: '0',

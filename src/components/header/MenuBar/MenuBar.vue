@@ -45,11 +45,15 @@
         </q-list>
       </q-menu>
     </q-btn>
+    <q-space/>
+    <div class="row">
       <q-space/>
       <transactions></transactions>
       <q-separator vertical />
       <network-selector></network-selector>
+      <q-separator vertical />
       <account-selector></account-selector>
+    </div>
   </q-bar>
 </template>
 <script setup lang="ts">

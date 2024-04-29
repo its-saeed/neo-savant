@@ -5,7 +5,7 @@
     :no-esc-dismiss="false"
     backdrop-filter="blur(4px)"
   >
-    <q-card style="width: 400px; max-width: 80vw">
+    <q-card style="width: 500px; max-width: 80vw">
       <q-tabs
         v-model="tab"
         dense
@@ -117,13 +117,13 @@ const load = async () => {
   const keystore = await readUploadedFileAsText(keystoreFile.value);
   try {
     const account = await Account.fromFile(keystore.toString(), secret.value);
-    store.add(accountName.value, account.address, forNetworks.value, {
+    store.add(accountName.value, account.address, account.bech32Address, forNetworks.value, {
       keystore: keystore.toString(),
       passphrase: secret.value,
     });
     q.notify({
       type: 'info',
-      message: `${account.address} imported successfully.`,
+      message: `${account.bech32Address} imported successfully.`,
     });
     show.value = false;
   } catch (error) {

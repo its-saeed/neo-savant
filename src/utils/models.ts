@@ -23,6 +23,7 @@ export interface Tag {
 export interface Account {
   name: string;
   address: string;
+  bech32Address: string;
   balance: string;
   balanceRefreshInProgress: boolean;
   account: KeystoreAccount;

@@ -2,24 +2,16 @@
   <q-btn-dropdown
     dense
     unelevated
-    split
     no-caps
-    @click="refreshSelectedAccountBalance"
+    :disable="blockchainStore.selectedNetwork === null"
   >
     <template v-slot:label>
       <q-icon left name="wallet" />
       <template v-if="blockchainStore.selectedAccount">
-        {{ blockchainStore.selectedAccount?.name }}
-        <q-badge color="orange" class="text-bold q-ml-sm">
-          {{ blockchainStore.selectedAccount?.balance }} ZIL
-          <q-spinner
-            v-if="
-              blockchainStore.selectedAccount &&
-              blockchainStore.selectedAccount.balanceRefreshInProgress
-            "
-            size="12px"
-          />
-        </q-badge>
+        <div class="text-bold q-mr-sm">
+          {{ blockchainStore.selectedAccount?.name }}
+        </div>
+        <account-balance-badge :account="blockchainStore.selectedAccount"/>
       </template>
       <div v-else>Import an Account</div>
     </template>
@@ -55,12 +47,14 @@
           >
             <q-item-section @click="selectAccount(account.name)" v-close-popup>
               <q-item-label>
-                <span class="text-bold q-mr-sm">{{ account.name }}</span>
-                <q-badge color="orange" class="text-bold">
-                  {{ account.balance }} ZIL
-                </q-badge>
+                <span class="text-subtitle1 text-bold q-mr-sm">{{ account.name }}</span>
+                <account-balance-badge :account="account"/>
               </q-item-label>
               <q-item-label caption>
+                <div>
+                  {{ account.bech32Address }}
+                  <copy-to-clipboard-btn :content="account.bech32Address"/>
+                </div>
                 <div>
                   {{ account.address }}
                   <copy-to-clipboard-btn :content="account.address.toLowerCase()"/>
@@ -78,18 +72,6 @@
                   icon="delete"
                 />
                 <q-btn class="gt-xs" size="10px" flat dense round icon="edit" />
-                <q-btn
-                  class="gt-xs"
-                  size="10px"
-                  :loading="account.balanceRefreshInProgress"
-                  flat
-                  dense
-                  round
-                  icon="autorenew"
-                  @click="refreshBalance(account.name)"
-                >
-                  <q-tooltip> Refresh balance </q-tooltip>
-                </q-btn>
               </div>
             </q-item-section>
           </q-item>
@@ -111,6 +93,7 @@ import { useAccountsStore } from 'stores/accounts';
 import { useQuasar } from 'quasar';
 import { useBlockchainStore } from 'src/stores/blockchain';
 import CopyToClipboardBtn from 'components/CopyToClipboardBtn.vue';
+import AccountBalanceBadge from 'components/AccountBalanceBadge.vue';
 
 const q = useQuasar();
 const blockchainStore = useBlockchainStore();
@@ -139,19 +122,6 @@ const selectAccount = (name: string) => {
   }
 };
 
-const refreshBalance = (address: string) => {
-  try {
-    accountsStore.refreshBalance(address);
-  } catch (error) {}
-  return;
-};
-
-const refreshSelectedAccountBalance = () => {
-  try {
-    blockchainStore.refreshSelectedAccountBalance();
-  } catch (error) {}
-  return;
-};
 </script>
 
 <style lang=""></style>
