@@ -20,18 +20,12 @@
             type="number"
             v-model="chaiId"
           />
-          <div class="col row">
-            <q-space />
-            <q-btn
-              class="col-2"
-              type="primary"
-              color="primary"
-              @click="addNetwork"
-              >Add</q-btn
-            >
-          </div>
         </div>
       </q-card-section>
+      <q-separator />
+      <q-card-actions align="right" class="bg-grey-2">
+        <q-btn no-caps flat color="primary" @click="addNetwork">Add</q-btn>
+      </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
