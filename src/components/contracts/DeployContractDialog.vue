@@ -56,7 +56,7 @@
       </q-card-section>
       <q-separator />
       <q-card-actions class="bg-grey-2">
-        <q-btn no-caps flat icon="upload" color="primary" @click="deploy"
+        <q-btn no-caps flat icon="upload" color="primary" :loading="loading" @click="deploy"
           >Deploy</q-btn
         >
         <q-space />
@@ -74,28 +74,59 @@ import { getContractAbi } from 'src/scilla';
 import { ref } from 'vue';
 import { useBlockchainStore } from 'src/stores/blockchain';
 import ContractInput from './ContractInput.vue';
+import { useQuasar } from 'quasar';
 
+const q = useQuasar();
+
+const show = ref(true);
 const amount = ref(0);
 const gasPrice = ref(0);
 const gasLimit = ref(0);
-const abi = ref(null);
+const abi = ref();
+let params = [];
 const blockchainStore = useBlockchainStore();
+const loading = ref(false);
 
 onMounted(async () => {
-  abi.value = await getContractAbi(props.code);
-  console.log(abi.value);
+  const contractAbi = await getContractAbi(props.code);
+  abi.value = contractAbi;
+  params = contractAbi.params;
 
   try {
     const price = (await blockchainStore.minimumGasPrice) || '0';
     gasPrice.value = parseInt(price);
   } catch (error) {
+    q.notify({
+      type: 'warning',
+      message: 'Failed to get the minimum gas price, 0 is set.'
+    })
     gasPrice.value = 0;
   }
 });
 
 const props = defineProps(['file', 'code']);
 
-const deploy = () => {
-  return;
+const deploy = async () => {
+  loading.value = true;
+  try {
+    const id = await blockchainStore.deployContract(props.code, {
+      gasPrice: gasPrice.value,
+      gasLimit: gasLimit.value,
+      amount: amount.value
+    }, params)
+    q.notify({
+      type: 'info',
+      message: `Contract deployment started. ${id}`,
+    });
+    show.value = false;
+  } catch (error) {
+    console.log(error)
+    q.notify({
+      type: 'negative',
+      message: `Failed to deploy. ${error}`,
+    });
+  } finally {
+    loading.value = false;
+  }
 };
 </script>

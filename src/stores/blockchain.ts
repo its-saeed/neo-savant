@@ -162,30 +162,29 @@ export const useBlockchainStore = defineStore('blockchain', {
           value: '0',
         },
       ];
-      try {
-        const tx = this.zilliqa.transactions.new(
-          {
-            version: this.selectedNetworkVersion,
-            toAddr: '0x0000000000000000000000000000000000000000',
-            amount: new BN(txParams.amount),
-            gasPrice: new BN(txParams.gasPrice), // in Qa
-            gasLimit: txParams.gasLimit,
-            code: code,
-            data: JSON.stringify(init).replace(/\\"/g, '"'),
-          },
-          true
-        );
+      const tx = this.zilliqa.transactions.new(
+        {
+          version: this.selectedNetworkVersion,
+          toAddr: '0x0000000000000000000000000000000000000000',
+          amount: new BN(txParams.amount),
+          gasPrice: new BN(txParams.gasPrice), // in Qa
+          gasLimit: txParams.gasLimit,
+          code: code,
+          data: JSON.stringify(init).replace(/\\"/g, '"'),
+        },
+        true
+      );
 
-        const txn = await this.zilliqa.blockchain.createTransaction(tx);
-        this.transactions.push({
-          id: txn.id || 'NO_ID',
-          network: this.selectedNetworkName,
-          statusMessage: 'Initialized',
-        });
+      const txn = await this.zilliqa.blockchain.createTransactionWithoutConfirm(
+        tx
+      );
 
-        return txn.id;
-      } catch (error) {}
-      return;
+      this.transactions.push({
+        id: txn.id || 'NO_ID',
+        statusMessage: 'Initialized',
+        network: this.selectedNetworkName,
+      });
+      return txn.id;
     },
   },
 });
