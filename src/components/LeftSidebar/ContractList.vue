@@ -8,10 +8,7 @@
           </q-item-label>
           <q-item-label caption>
             <div>
-              <span class="ellipsis">
-                {{ smartTruncate(contract.address, 23, { position: 10}) }}
-                <q-tooltip>{{ contract.address }}</q-tooltip>
-              </span>
+              <truncated-text :text="contract.address" :length="24" :position="12"/>
               <copy-to-clipboard-btn :content="contract.address"/>
             </div>
           </q-item-label>
@@ -24,8 +21,8 @@
 
 <script setup lang="ts">
 import { useContractsStore } from 'src/stores/contracts';
-import { smartTruncate } from 'src/utils';
 import CopyToClipboardBtn from 'components/CopyToClipboardBtn.vue';
+import TruncatedText from 'components/TruncatedText.vue';
 
 const store = useContractsStore();
 

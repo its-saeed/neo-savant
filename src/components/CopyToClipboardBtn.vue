@@ -7,7 +7,7 @@
     @click.stop="copyContentToClipboard(props.content)"
   >
     <q-tooltip>
-      {{ contentCopiedToClipboard ? 'Copied' : 'Copy Address' }}
+      {{ contentCopiedToClipboard ? 'Copied' : 'Copy' }}
     </q-tooltip>
   </q-btn>
 </template>
