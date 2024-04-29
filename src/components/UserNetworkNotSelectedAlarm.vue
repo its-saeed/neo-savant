@@ -1,6 +1,6 @@
 <template>
   <q-badge
-    v-if="networksStore.selected === null || accountsStore.selected === null"
+    v-if="blockchainStore.selectedAccount === null || blockchainStore.selectedNetwork === null"
     color="red"
     floating
   >
@@ -10,9 +10,7 @@
 </template>
 
 <script setup>
-import { useNetworksStore } from 'stores/networks';
-import { useAccountsStore } from 'stores/accounts';
+import { useBlockchainStore } from 'src/stores/blockchain';
 
-const networksStore = useNetworksStore();
-const accountsStore = useAccountsStore();
+const blockchainStore = useBlockchainStore();
 </script>
