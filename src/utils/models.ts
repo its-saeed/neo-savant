@@ -12,7 +12,12 @@ export interface Contract {
   name: string;
   network: string;
   address: string;
-  tags: Tag[];
+}
+
+export interface PendingContract {
+  name: string;
+  txHash: string;
+  network: string;
 }
 
 export interface Tag {

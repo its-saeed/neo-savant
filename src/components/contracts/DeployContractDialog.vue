@@ -90,6 +90,8 @@ import { ref } from 'vue';
 import { useBlockchainStore } from 'src/stores/blockchain';
 import ContractInput from './ContractInput.vue';
 import { useQuasar } from 'quasar';
+import { useContractsStore } from 'src/stores/contracts';
+import { BN, Long} from '@zilliqa-js/util';
 
 const q = useQuasar();
 
@@ -104,6 +106,7 @@ const abi = ref();
 let abiParams = [];
 const initializationParameters = ref({})
 const blockchainStore = useBlockchainStore();
+const contractsStore = useContractsStore();
 
 onMounted(async () => {
   const contractAbi = await getContractAbi(props.code);
@@ -128,10 +131,10 @@ const props = defineProps(['file', 'code']);
 const deploy = async () => {
   loading.value = true;
   try {
-    const id = await blockchainStore.deployContract(contractName.value, props.code, {
-      gasPrice: gasPrice.value,
-      gasLimit: gasLimit.value,
-      amount: amount.value
+    const id = await contractsStore.deploy(contractName.value, props.code, {
+      gasPrice: new BN(gasPrice.value),
+      gasLimit: Long.fromNumber(gasLimit.value),
+      amount: new BN(amount.value),
     }, abiParams.map(param => ({
       ...param,
       value: initializationParameters.value[param.vname]

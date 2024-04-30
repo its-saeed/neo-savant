@@ -23,8 +23,18 @@
 import { useContractsStore } from 'src/stores/contracts';
 import CopyToClipboardBtn from 'components/CopyToClipboardBtn.vue';
 import TruncatedText from 'components/TruncatedText.vue';
+import { onMounted, onUnmounted } from 'vue';
 
 const store = useContractsStore();
+let intervalId: NodeJS.Timeout;
+
+onMounted(() => {
+  intervalId = setInterval(async () => {
+    await store.refreshPendingContracts();
+  }, 5000);
+});
+
+onUnmounted(() => clearInterval(intervalId))
 
 </script>
 
