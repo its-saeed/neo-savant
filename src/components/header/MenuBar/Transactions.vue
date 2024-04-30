@@ -24,8 +24,9 @@
               >
                 {{ transaction.statusMessage }}
               </q-badge><br/>
-              From: {{ transaction.tx.from }} <br/>
-              Amount: {{ transaction.tx.amount }} <br/>
+              From: {{ transaction.from }} <br/>
+              To: {{ transaction.to }} <br/>
+              Amount: {{ transaction.amount }} <br/>
               <q-badge color="primary" class="text-bold">
                 {{ transaction.network }}
               </q-badge>

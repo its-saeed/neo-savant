@@ -11,6 +11,20 @@
       </q-card-section>
 
       <q-card-section class="q-pt-none">
+        <div class="column">
+          <div class="row q-gutter-sm">
+            <q-input
+              dense
+              filled
+              class="col"
+              label="Contract Name"
+              hint="For easier reference"
+              v-model="contractName"
+            />
+          </div>
+        </div>
+      </q-card-section>
+      <q-card-section class="q-pt-none">
         <div class="text-subtitle1 text-grey-7">Transaction Parameters</div>
         <div class="column">
           <div class="row q-gutter-sm">
@@ -50,6 +64,7 @@
             class="col"
             :vname="param.vname"
             :type="param.type"
+            v-model="initializationParameters[param.vname]"
           />
         </div>
         <q-skeleton v-else type="QInput" />
@@ -78,19 +93,23 @@ import { useQuasar } from 'quasar';
 
 const q = useQuasar();
 
+const loading = ref(false);
 const show = ref(true);
 const amount = ref(0);
 const gasPrice = ref(0);
-const gasLimit = ref(0);
+const gasLimit = ref(30000);
+const contractName = ref('')
+
 const abi = ref();
-let params = [];
+let abiParams = [];
+const initializationParameters = ref({})
 const blockchainStore = useBlockchainStore();
-const loading = ref(false);
 
 onMounted(async () => {
   const contractAbi = await getContractAbi(props.code);
   abi.value = contractAbi;
-  params = contractAbi.params;
+  abiParams = contractAbi.params;
+  abiParams.forEach(item => initializationParameters.value[item.vname] = '')
 
   try {
     const price = (await blockchainStore.minimumGasPrice) || '0';
@@ -109,11 +128,14 @@ const props = defineProps(['file', 'code']);
 const deploy = async () => {
   loading.value = true;
   try {
-    const id = await blockchainStore.deployContract(props.code, {
+    const id = await blockchainStore.deployContract(contractName.value, props.code, {
       gasPrice: gasPrice.value,
       gasLimit: gasLimit.value,
       amount: amount.value
-    }, params)
+    }, abiParams.map(param => ({
+      ...param,
+      value: initializationParameters.value[param.vname]
+    })))
     q.notify({
       type: 'info',
       message: `Contract deployment started. ${id}`,

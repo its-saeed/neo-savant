@@ -35,13 +35,11 @@ export interface KeystoreAccount {
   passphrase: string;
 }
 
-// export type TransactionStatus =
-//   | 'Initialized'
-//   | 'Pending'
-//   | 'Confirmed'
-//   | 'Rejected';
 export interface WaitingTransaction {
   id: string;
   network: string;
   statusMessage: string;
+  from: string;
+  to: string;
+  amount: string;
 }

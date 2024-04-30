@@ -4,6 +4,7 @@
     dense
     :label="`${props.vname}: ${props.type}`"
     :type="quasarType"
+    v-model="model"
   >
     <template v-slot:append>
       <q-btn round flat dense icon="help">
@@ -30,6 +31,7 @@
 import { defineProps } from 'vue';
 import { getParamType } from 'src/utils/validation';
 import { computed } from 'vue';
+const model = defineModel()
 
 const props = defineProps(['vname', 'type']);
 const type = getParamType(props.type);

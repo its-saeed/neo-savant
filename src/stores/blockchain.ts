@@ -22,13 +22,7 @@ export const useBlockchainStore = defineStore('blockchain', {
     selectedAccount: null as Account | null,
     selectedNetwork: null as Network | null,
     zilliqa: null as Zilliqa | null,
-    transactions: [
-      {
-        id: 'faa04a9a664f25e3e9f3a0500b9b969ab50dbc84eb5604792f467dd6a04d86e5',
-        statusMessage: 'Confirmed',
-        network: 'Testnet',
-      },
-    ] as WaitingTransaction[],
+    transactions: [] as WaitingTransaction[],
   }),
   getters: {
     getTransactionById: (state) => (id: string) => {
@@ -111,7 +105,7 @@ export const useBlockchainStore = defineStore('blockchain', {
       const tx = this.zilliqa.transactions.new({
         version: this.selectedNetworkVersion,
         toAddr: toChecksumAddress(recipientAddress),
-        amount,
+        amount: amount,
         gasPrice: units.toQa('2000', units.Units.Li),
         gasLimit: Long.fromNumber(50),
       });
@@ -123,6 +117,9 @@ export const useBlockchainStore = defineStore('blockchain', {
         id: txn.id || 'NO_ID',
         statusMessage: 'Initialized',
         network: this.selectedNetworkName,
+        from: this.zilliqa.wallet.defaultAccount?.bech32Address || 'N/A',
+        to: recipientAddress,
+        amount: amount.toString(),
       });
 
       return txn.id;
@@ -150,7 +147,12 @@ export const useBlockchainStore = defineStore('blockchain', {
       const balance = await this.getBalance(this.selectedAccount.address);
       this.selectedAccount.balance = balance;
     },
-    async deployContract(code: string, txParams: TxParams, params: Value[]) {
+    async deployContract(
+      contractName: string,
+      code: string,
+      txParams: TxParams,
+      params: Value[]
+    ) {
       if (this.zilliqa == null) {
         throw new Error('Please select a network for contract deployment');
       }
@@ -183,6 +185,9 @@ export const useBlockchainStore = defineStore('blockchain', {
         id: txn.id || 'NO_ID',
         statusMessage: 'Initialized',
         network: this.selectedNetworkName,
+        amount: txParams.amount,
+        from: this.zilliqa.wallet.defaultAccount?.bech32Address || 'N/A',
+        to: '0x0000000000000000000000000000000000000000',
       });
       return txn.id;
     },
