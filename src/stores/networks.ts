@@ -54,4 +54,5 @@ export const useNetworksStore = defineStore('networks', {
       }
     },
   },
+  persist: true,
 });
