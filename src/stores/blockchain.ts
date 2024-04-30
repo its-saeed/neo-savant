@@ -1,20 +1,10 @@
 import { defineStore } from 'pinia';
-import {
-  Account,
-  KeystoreAccount,
-  Network,
-  WaitingTransaction,
-} from '../utils/models';
+import { Account, KeystoreAccount, Network } from '../utils/models';
 import { useAccountsStore } from './accounts';
 import { useNetworksStore } from './networks';
 import { BN, bytes, units } from '@zilliqa-js/util';
-import {
-  Init,
-  TxParams,
-  Value,
-  Zilliqa,
-  toChecksumAddress,
-} from '@zilliqa-js/zilliqa';
+import { TxParams, Zilliqa, toChecksumAddress } from '@zilliqa-js/zilliqa';
+import { useTransactionsStore } from './transactions';
 import Long from 'long';
 
 export const useBlockchainStore = defineStore('blockchain', {
@@ -22,12 +12,8 @@ export const useBlockchainStore = defineStore('blockchain', {
     selectedAccount: null as Account | null,
     selectedNetwork: null as Network | null,
     zilliqa: null as Zilliqa | null,
-    transactions: [] as WaitingTransaction[],
   }),
   getters: {
-    getTransactionById: (state) => (id: string) => {
-      return state.transactions.find((item) => item.id === id);
-    },
     getBalance: (state) => {
       return async (address: string) => {
         if (state.zilliqa === null) {
@@ -94,50 +80,13 @@ export const useBlockchainStore = defineStore('blockchain', {
       }
     },
     async transferZil(recipientAddress: string, amount: BN) {
-      if (this.zilliqa === null) {
-        throw new Error('Please select a network.');
-      }
-
-      if (this.selectedAccount === null) {
-        throw new Error('Please select an account.');
-      }
-
-      const tx = this.zilliqa.transactions.new({
+      return this.sendTransaction({
         version: this.selectedNetworkVersion,
         toAddr: toChecksumAddress(recipientAddress),
-        amount: amount,
+        amount,
         gasPrice: units.toQa('2000', units.Units.Li),
         gasLimit: Long.fromNumber(50),
       });
-
-      const txn = await this.zilliqa.blockchain.createTransactionWithoutConfirm(
-        tx
-      );
-      this.transactions.push({
-        id: txn.id || 'NO_ID',
-        statusMessage: 'Initialized',
-        network: this.selectedNetworkName,
-        from: this.zilliqa.wallet.defaultAccount?.bech32Address || 'N/A',
-        to: recipientAddress,
-        amount: amount.toString(),
-      });
-
-      return txn.id;
-    },
-    async refreshTransactionStatus(txHash: string) {
-      if (this.zilliqa === null) {
-        throw new Error('Please select a network.');
-      }
-
-      const txn = this.getTransactionById(txHash);
-      if (txn == null) {
-        throw new Error(`No transaction with hash ${txHash}`);
-      }
-
-      const response = await this.zilliqa.blockchain.getTransactionStatus(
-        txHash
-      );
-      txn.statusMessage = response.statusMessage;
     },
     async refreshSelectedAccountBalance() {
       if (this.selectedAccount === null) {
@@ -147,32 +96,21 @@ export const useBlockchainStore = defineStore('blockchain', {
       const balance = await this.getBalance(this.selectedAccount.address);
       this.selectedAccount.balance = balance;
     },
-    async deployContract(
-      contractName: string,
-      code: string,
-      txParams: TxParams,
-      params: Value[]
-    ) {
+    async sendTransaction(txParams: TxParams, code?: string, data?: string) {
       if (this.zilliqa == null) {
         throw new Error('Please select a network for contract deployment');
       }
-      const init: Init = [
-        ...params,
-        {
-          vname: '_scilla_version',
-          type: 'Uint32',
-          value: '0',
-        },
-      ];
+
+      if (this.selectedAccount === null) {
+        throw new Error('Please select an account.');
+      }
+
       const tx = this.zilliqa.transactions.new(
         {
+          ...txParams,
           version: this.selectedNetworkVersion,
-          toAddr: '0x0000000000000000000000000000000000000000',
-          amount: new BN(txParams.amount),
-          gasPrice: new BN(txParams.gasPrice), // in Qa
-          gasLimit: txParams.gasLimit,
-          code: code,
-          data: JSON.stringify(init).replace(/\\"/g, '"'),
+          code,
+          data,
         },
         true
       );
@@ -181,13 +119,14 @@ export const useBlockchainStore = defineStore('blockchain', {
         tx
       );
 
-      this.transactions.push({
+      const store = useTransactionsStore();
+      store.add({
         id: txn.id || 'NO_ID',
         statusMessage: 'Initialized',
         network: this.selectedNetworkName,
         amount: txParams.amount,
         from: this.zilliqa.wallet.defaultAccount?.bech32Address || 'N/A',
-        to: '0x0000000000000000000000000000000000000000',
+        to: txParams.toAddr,
       });
       return txn.id;
     },

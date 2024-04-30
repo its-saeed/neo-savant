@@ -17,9 +17,9 @@
 
 <script setup>
 import { defineProps, ref } from 'vue';
-import { useBlockchainStore } from 'src/stores/blockchain';
+import { useTransactionsStore } from 'src/stores/transactions';
 const props = defineProps(['txHash']);
-const blockchainStore = useBlockchainStore();
+const store = useTransactionsStore();
 const loading = ref(false);
 const errorMessage = ref(null);
 
@@ -27,7 +27,7 @@ const refreshTransactionStatus = async () => {
   loading.value = true;
   errorMessage.value = null;
   try {
-    await blockchainStore.refreshTransactionStatus(props.txHash);
+    await store.refreshTransactionStatus(props.txHash);
   } catch (error) {
     errorMessage.value = error;
   } finally {
