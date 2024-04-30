@@ -76,6 +76,7 @@ const transfer = async () => {
     });
     show.value = false;
   } catch (error) {
+    console.log(error)
     q.notify({
       type: 'negative',
       message: `Failed to transfer. ${error}`,

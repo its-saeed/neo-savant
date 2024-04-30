@@ -8,7 +8,7 @@
   >
     <q-list dense>
       <div
-        v-for="transaction in blockchainStore.transactions"
+        v-for="transaction in store.transactions"
         :key="transaction.id"
       >
         <q-item>
@@ -45,12 +45,24 @@
 </template>
 
 <script setup lang="ts">
-import { useBlockchainStore } from 'src/stores/blockchain';
+import { useTransactionsStore } from 'src/stores/transactions';
 import TransactionStatusRefresherBtn from './TransactionStatusRefresherBtn.vue';
 import CopyToClipboardBtn from 'src/components/CopyToClipboardBtn.vue';
 import TruncatedText from 'components/TruncatedText.vue';
+import { onMounted, onUnmounted } from 'vue';
 
-const blockchainStore = useBlockchainStore();
+const store = useTransactionsStore();
+let intervalId: NodeJS.Timeout;
+
+onMounted(() => {
+  intervalId = setInterval(async () => {
+    await store.refreshPendingTxns();
+  }, 5000);
+});
+
+onUnmounted(() => clearInterval(intervalId))
+
+
 const txStatusColor = (statusMessage: string) => {
   switch (statusMessage) {
     case 'Initialised':
