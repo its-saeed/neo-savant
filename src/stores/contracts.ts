@@ -17,26 +17,40 @@ export const useContractsStore = defineStore('contracts', {
       }
 
       const transactions = useTransactionsStore();
+      const blockchain = useBlockchainStore();
       const responses = await Promise.all(
         this.pending.map((c) => {
           return transactions.refreshTransactionStatus(c.txHash);
         })
       );
 
+      const deployed = this.pending.filter((c, i) => {
+        const statusMessage = responses[i].statusMessage;
+        return statusMessage === 'Confirmed';
+      });
+
+      const contractAddresses = await Promise.all(
+        deployed.map((c) => {
+          return blockchain.getContractAddressFromTransactionID(c.txHash);
+        })
+      );
+
+      deployed.forEach((c, i) => {
+        Notify.create({
+          type: 'info',
+          message: `Contract deployment finished, ${c.txHash}`,
+        });
+        this.contracts.push({
+          name: c.name,
+          network: c.network,
+          address: contractAddresses[i],
+        });
+      });
+
       this.pending = this.pending.filter((c, i) => {
         const statusMessage = responses[i].statusMessage;
         const id = responses[i].ID;
         if (statusMessage === 'Confirmed') {
-          Notify.create({
-            type: 'info',
-            message: `Contract deployment finished, ${id}`,
-          });
-
-          this.contracts.push({
-            name: c.name,
-            network: c.network,
-            address: responses[i].ID,
-          });
           return false; // To filter out
         } else if (statusMessage.startsWith('Rejected')) {
           // TODO: Show the exact message.
@@ -97,4 +111,5 @@ export const useContractsStore = defineStore('contracts', {
     },
   },
   getters: {},
+  persist: true,
 });

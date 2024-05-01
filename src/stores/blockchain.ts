@@ -30,6 +30,22 @@ export const useBlockchainStore = defineStore('blockchain', {
         }
       };
     },
+    getContractAddressFromTransactionID: (state) => {
+      return async (txHash: string) => {
+        if (state.zilliqa === null) {
+          throw new Error('Please select a network');
+        }
+        const contractAddress =
+          await state.zilliqa.blockchain.getContractAddressFromTransactionID(
+            txHash
+          );
+        if (contractAddress.result) {
+          return contractAddress.result;
+        }
+
+        throw new Error('Failed to get contract address');
+      };
+    },
     getSmartContractCode: (state) => {
       return async (address: string) => {
         if (state.zilliqa === null) {

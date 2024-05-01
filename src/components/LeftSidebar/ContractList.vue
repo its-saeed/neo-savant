@@ -4,22 +4,33 @@
       <q-item class="bg-grey-2">
         <q-item-section>
           <q-item-label>
-            <div class="row text-bold q-mr-sm text-grey-6">{{ contract.name }}
-              <q-space/>
-              <q-badge color="grey" text-color="white" label="Pending" >
-                <q-circular-progress class="q-ml-xs" indeterminate rounded size="10px"/>
+            <div class="row text-bold q-mr-sm text-grey-6">
+              {{ contract.name }}
+              <q-space />
+              <q-badge color="grey" text-color="white" label="Pending">
+                <q-circular-progress
+                  class="q-ml-xs"
+                  indeterminate
+                  rounded
+                  size="10px"
+                />
               </q-badge>
             </div>
           </q-item-label>
           <q-item-label caption>
             <div>
-              <truncated-text class="text-grey-5" :text="contract.txHash" :length="22" :position="12"/>
-              <copy-to-clipboard-btn :content="contract.txHash"/>
+              <truncated-text
+                class="text-grey-5"
+                :text="contract.txHash"
+                :length="22"
+                :position="12"
+              />
+              <copy-to-clipboard-btn :content="contract.txHash" />
             </div>
           </q-item-label>
         </q-item-section>
       </q-item>
-      <q-separator/>
+      <q-separator />
     </div>
     <div v-for="contract in store.contracts" :key="contract.address">
       <q-item>
@@ -29,14 +40,44 @@
           </q-item-label>
           <q-item-label caption>
             <div class="row items-center">
-              <truncated-text :text="contract.address" :length="22" :position="12"/>
-              <q-space/>
-              <copy-to-clipboard-btn :content="contract.address"/>
+              <truncated-text
+                :text="contract.address"
+                :length="22"
+                :position="12"
+              />
+              <q-space />
+              <copy-to-clipboard-btn :content="contract.address" />
+            </div>
+          </q-item-label>
+          <q-item-label>
+            <div class="row q-gutter-xs">
+              <q-btn
+                color="primary"
+                no-caps
+                label="Call Transition"
+                size="sm"
+                dense
+                @click="showContractDetailsDialog(contract)"
+              />
+              <q-btn
+                color="secondary"
+                no-caps
+                label="Get State"
+                size="sm"
+                dense
+              />
+              <q-btn
+                color="negative"
+                no-caps
+                label="Delete"
+                size="sm"
+                dense
+              />
             </div>
           </q-item-label>
         </q-item-section>
       </q-item>
-      <q-separator/>
+      <q-separator />
     </div>
   </q-list>
 </template>
@@ -46,9 +87,13 @@ import { useContractsStore } from 'src/stores/contracts';
 import CopyToClipboardBtn from 'components/CopyToClipboardBtn.vue';
 import TruncatedText from 'components/TruncatedText.vue';
 import { onMounted, onUnmounted } from 'vue';
+import { useQuasar } from 'quasar';
+import CallTransitionDialog from './ContractsList/CallTransitionDialog.vue';
+import { Contract } from 'src/utils';
 
 const store = useContractsStore();
 let intervalId: NodeJS.Timeout;
+const q = useQuasar();
 
 onMounted(() => {
   intervalId = setInterval(async () => {
@@ -56,8 +101,16 @@ onMounted(() => {
   }, 5000);
 });
 
-onUnmounted(() => clearInterval(intervalId))
+onUnmounted(() => clearInterval(intervalId));
 
+const showContractDetailsDialog = (contract: Contract) => {
+  q.dialog({
+    component: CallTransitionDialog,
+    componentProps: {
+      contract,
+    },
+  });
+};
 </script>
 
 <style lang=""></style>
