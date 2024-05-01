@@ -39,5 +39,4 @@ export const useTransactionsStore = defineStore('transactions', {
       return response;
     },
   },
-  persist: true,
 });

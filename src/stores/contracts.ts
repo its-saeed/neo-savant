@@ -7,13 +7,7 @@ import { Notify } from 'quasar';
 
 export const useContractsStore = defineStore('contracts', {
   state: () => ({
-    contracts: [
-      {
-        name: 'Hello world',
-        network: 'Testnet',
-        address: '0x64b6579fd78a5df3a1811b611c93d88aee41129f',
-      },
-    ] as Contract[],
+    contracts: [] as Contract[],
     pending: [] as PendingContract[],
   }),
   actions: {
@@ -103,5 +97,4 @@ export const useContractsStore = defineStore('contracts', {
     },
   },
   getters: {},
-  persist: true,
 });
