@@ -30,6 +30,22 @@ export const useBlockchainStore = defineStore('blockchain', {
         }
       };
     },
+    getSmartContractCode: (state) => {
+      return async (address: string) => {
+        if (state.zilliqa === null) {
+          throw new Error('Please select a network');
+        }
+
+        const contractCode =
+          await state.zilliqa.blockchain.getSmartContractCode(address);
+
+        if (contractCode.error) {
+          throw new Error(contractCode.error.message);
+        }
+
+        return contractCode.result.code;
+      };
+    },
     minimumGasPrice: async (state) => {
       if (state.zilliqa === null) {
         throw new Error('Please select a network');

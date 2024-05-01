@@ -91,13 +91,14 @@ export const useContractsStore = defineStore('contracts', {
 
       return id;
     },
-    async import(name: string, address: string, network: string) {
-      // Import the contract
+    async import(name: string, address: string) {
+      const blockchainStore = useBlockchainStore();
 
+      await blockchainStore.getSmartContractCode(address);
       this.contracts.push({
         name,
-        network,
         address,
+        network: blockchainStore.selectedNetwork?.name || 'N/A',
       });
     },
   },
