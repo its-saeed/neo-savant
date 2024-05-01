@@ -11,6 +11,16 @@ export const useContractsStore = defineStore('contracts', {
     pending: [] as PendingContract[],
   }),
   actions: {
+    delete(name: string) {
+      const contract = this.getByName(name);
+      if (contract === undefined) {
+        throw new Error(`No contract with name of ${name}`);
+      }
+
+      this.contracts = this.contracts.filter(
+        (contract) => contract.name !== name
+      );
+    },
     async refreshPendingContracts() {
       if (this.pending.length === 0) {
         return;
@@ -110,6 +120,12 @@ export const useContractsStore = defineStore('contracts', {
       });
     },
   },
-  getters: {},
+  getters: {
+    getByName:
+      (state) =>
+      (name: string): Contract | undefined => {
+        return state.contracts.find((item: Contract) => item.name === name);
+      },
+  },
   persist: true,
 });

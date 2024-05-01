@@ -28,7 +28,7 @@
           </div>
           {{ selectedParams.params }}
         </div>
-        <div v-else class="text-grey-5 q-mt-sm">
+        <div v-else-if="selectedTransition !== ''" class="text-grey-5 q-mt-sm">
           <strong>{{ selectedTransition.vname }}</strong> does not need any
           parameters
         </div>
@@ -52,6 +52,7 @@ let contractCode = '';
 const props = defineProps(['contract']);
 const q = useQuasar();
 const selectedTransition = ref('');
+const show = ref(true);
 const transitions = ref([]);
 const transitions2 = {};
 
@@ -79,8 +80,8 @@ onMounted(async () => {
         value: t,
       };
     });
-    console.log(transitions.value);
   } catch (error) {
+    show.value = false;
     q.notify({
       type: 'negative',
       message: `Failed to get the contract ABI. Error: ${error}`,
@@ -88,5 +89,4 @@ onMounted(async () => {
   }
 });
 
-const show = ref(true);
 </script>
