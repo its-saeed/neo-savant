@@ -76,7 +76,7 @@
         >
         <q-space />
         <q-btn no-caps flat icon="delete_forever" color="red">Reset</q-btn>
-        <q-btn no-caps flat icon="close" color="warning">Cancel</q-btn>
+        <q-btn no-caps flat icon="close" color="warning" v-close-popup>Cancel</q-btn>
       </q-card-actions>
     </q-card>
   </q-dialog>
