@@ -28,7 +28,6 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
 import { getParamType } from 'src/utils/validation';
 import { computed } from 'vue';
 const model = defineModel()

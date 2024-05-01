@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import { defineProps, ref } from 'vue';
+import { ref } from 'vue';
 import { useTransactionsStore } from 'src/stores/transactions';
 const props = defineProps(['txHash']);
 const store = useTransactionsStore();

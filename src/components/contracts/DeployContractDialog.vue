@@ -83,7 +83,6 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
 import { onMounted } from 'vue';
 import { getContractAbi } from 'src/scilla';
 import { ref } from 'vue';
