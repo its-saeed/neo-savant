@@ -14,6 +14,16 @@ export interface Contract {
   address: string;
 }
 
+export interface TransitionCalls {
+  [contractAddress: string]: Transition[];
+}
+
+export interface Transition {
+  txHash: string;
+  vname: string;
+  result?: string;
+}
+
 export interface PendingContract {
   name: string;
   txHash: string;

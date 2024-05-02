@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import { Contract, PendingContract } from '../utils/models';
-import { Init, TxParams, Value } from '@zilliqa-js/zilliqa';
+import { Contract, PendingContract, TransitionCalls } from '../utils/models';
+import { Init, TxParams, Value, toChecksumAddress } from '@zilliqa-js/zilliqa';
 import { useBlockchainStore } from './blockchain';
 import { useTransactionsStore } from './transactions';
 import { Notify } from 'quasar';
@@ -9,8 +9,35 @@ export const useContractsStore = defineStore('contracts', {
   state: () => ({
     contracts: [] as Contract[],
     pending: [] as PendingContract[],
+    transitionCalls: {} as TransitionCalls,
   }),
   actions: {
+    async callTransition(
+      contractAddress: string,
+      transitionName: string,
+      txParams: TxParams,
+      parameters: Value[]
+    ) {
+      const blockchain = useBlockchainStore();
+      const txHash = await blockchain.sendTransaction(
+        {
+          ...txParams,
+          toAddr: toChecksumAddress(contractAddress),
+        },
+        undefined,
+        JSON.stringify({
+          _tag: transitionName,
+          params: parameters,
+        })
+      );
+
+      (this.transitionCalls[contractAddress] ??= []).push({
+        vname: transitionName,
+        txHash: txHash || 'N/A',
+      });
+
+      return txHash;
+    },
     delete(name: string) {
       const contract = this.getByName(name);
       if (contract === undefined) {
