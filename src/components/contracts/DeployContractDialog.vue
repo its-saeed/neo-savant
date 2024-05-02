@@ -20,6 +20,7 @@
               label="Contract Name"
               hint="For easier reference"
               v-model="contractName"
+              :rules="[val => !!val || 'Name is required']"
             />
           </div>
         </div>
@@ -64,7 +65,7 @@
       </q-card-section>
       <q-separator />
       <q-card-actions class="bg-grey-2">
-        <q-btn no-caps flat icon="upload" color="primary" :loading="loading" @click="deploy"
+        <q-btn no-caps flat icon="upload" color="primary" :loading="loading" @click="deploy" :disable="deployBtnIsDisabled"
           >Deploy</q-btn
         >
         <q-space />
@@ -76,7 +77,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { getContractAbi } from 'src/scilla';
 import { ref } from 'vue';
 import ContractInput from './ContractInput.vue';
@@ -98,6 +99,10 @@ const abi = ref();
 let abiParams = [];
 const initializationParameters = ref({})
 const contractsStore = useContractsStore();
+
+const deployBtnIsDisabled = computed(() => {
+  return contractName.value === '';
+})
 
 onMounted(async () => {
   const contractAbi = await getContractAbi(props.code);
