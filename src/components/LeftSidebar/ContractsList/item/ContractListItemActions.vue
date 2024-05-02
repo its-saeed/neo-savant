@@ -14,6 +14,7 @@
       label="Get State"
       size="sm"
       dense
+      @click="showContractStateDialog()"
     />
     <q-btn
       color="negative"
@@ -28,6 +29,7 @@
 
 <script setup lang="ts">
 import CallTransitionDialog from '../CallTransitionDialog.vue';
+import ContractStateDialog from '../ContractStateDialog.vue';
 import { Contract } from 'src/utils';
 import { useQuasar } from 'quasar';
 import { useContractsStore } from 'src/stores/contracts';
@@ -63,6 +65,15 @@ const showDeleteContractDialog = () => {
         message: `${props.contract.name} failed to delete.`,
         type: 'negative'
       })
+    }
+  })
+}
+
+const showContractStateDialog = () => {
+  q.dialog({
+    component: ContractStateDialog,
+    componentProps: {
+      address: props.contract.address
     }
   })
 }
