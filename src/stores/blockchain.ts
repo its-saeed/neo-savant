@@ -30,6 +30,16 @@ export const useBlockchainStore = defineStore('blockchain', {
         }
       };
     },
+    getTransactionReceipt: (state) => {
+      return async (txHash: string) => {
+        if (state.zilliqa === null) {
+          throw new Error('Please select a network');
+        }
+        const tx = await state.zilliqa.blockchain.getTransaction(txHash);
+
+        return tx.getReceipt();
+      };
+    },
     getContractAddressFromTransactionID: (state) => {
       return async (txHash: string) => {
         if (state.zilliqa === null) {

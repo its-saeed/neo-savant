@@ -27,14 +27,12 @@
               From: {{ transaction.from }} <br/>
               To: {{ transaction.to }} <br/>
               Amount: {{ transaction.amount }} <br/>
-              <q-badge color="primary" class="text-bold">
-                {{ transaction.network }}
-              </q-badge>
             </q-item-label>
           </q-item-section>
           <q-item-section side top>
             <q-item-label>
               <transaction-status-refresher-btn :tx-hash="transaction.id" />
+              <transaction-receipt-btn :tx-hash="transaction.id" />
             </q-item-label>
           </q-item-section>
         </q-item>
@@ -47,6 +45,7 @@
 <script setup lang="ts">
 import { useTransactionsStore } from 'src/stores/transactions';
 import TransactionStatusRefresherBtn from './TransactionStatusRefresherBtn.vue';
+import TransactionReceiptBtn from 'src/components/TransactionReceiptBtn.vue';
 import CopyToClipboardBtn from 'src/components/CopyToClipboardBtn.vue';
 import TruncatedText from 'components/TruncatedText.vue';
 import { onMounted, onUnmounted } from 'vue';
