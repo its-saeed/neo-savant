@@ -36,14 +36,7 @@
               type="number"
               v-model="amount"
             />
-            <q-input
-              dense
-              filled
-              class="col"
-              label="Gas Price"
-              type="number"
-              v-model="gasPrice"
-            />
+            <gas-price-input v-model="gasPrice" />
             <q-input
               dense
               filled
@@ -86,11 +79,11 @@
 import { onMounted } from 'vue';
 import { getContractAbi } from 'src/scilla';
 import { ref } from 'vue';
-import { useBlockchainStore } from 'src/stores/blockchain';
 import ContractInput from './ContractInput.vue';
 import { useQuasar } from 'quasar';
 import { useContractsStore } from 'src/stores/contracts';
 import { BN, Long} from '@zilliqa-js/util';
+import GasPriceInput from 'src/components/GasPriceInput.vue';
 
 const q = useQuasar();
 
@@ -104,7 +97,6 @@ const contractName = ref('')
 const abi = ref();
 let abiParams = [];
 const initializationParameters = ref({})
-const blockchainStore = useBlockchainStore();
 const contractsStore = useContractsStore();
 
 onMounted(async () => {
@@ -112,17 +104,6 @@ onMounted(async () => {
   abi.value = contractAbi;
   abiParams = contractAbi.params;
   abiParams.forEach(item => initializationParameters.value[item.vname] = '')
-
-  try {
-    const price = (await blockchainStore.minimumGasPrice) || '0';
-    gasPrice.value = parseInt(price);
-  } catch (error) {
-    q.notify({
-      type: 'warning',
-      message: 'Failed to get the minimum gas price, 0 is set.'
-    })
-    gasPrice.value = 0;
-  }
 });
 
 const props = defineProps(['file', 'code']);
