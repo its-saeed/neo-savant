@@ -119,6 +119,12 @@ export const useBlockchainStore = defineStore('blockchain', {
       }
       this.zilliqa.wallet.addByKeystore(account.keystore, account.passphrase);
     },
+    addAccount(privateKey: string) {
+      if (this.zilliqa === null) {
+        throw new Error('Please select a network.');
+      }
+      this.zilliqa.wallet.addByPrivateKey(privateKey);
+    },
     setSelectedAccount(name: string) {
       const accountsStore = useAccountsStore();
       const account = accountsStore.getByName(name);

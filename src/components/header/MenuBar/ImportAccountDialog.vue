@@ -14,6 +14,7 @@
         align="justify"
         narrow-indicator
       >
+        <q-tab name="privatekey" label="Private Key" />
         <q-tab name="keystore" label="Keystore" />
         <q-tab name="ledger" label="Ledger" />
         <q-tab name="zilpay" label="Zilpay" />
@@ -22,6 +23,36 @@
       <q-separator />
 
       <q-tab-panels v-model="tab" animated>
+        <q-tab-panel name="privatekey">
+          <div class="text-h6 q-mb-sm">Import Private Key</div>
+          <div class="column q-gutter-md">
+            <q-input
+              filled
+              dense
+              class="col"
+              label="Name"
+              v-model="accountName"
+            />
+            <q-select
+              filled
+              multiple
+              dense
+              use-chips
+              stack-label
+              class="col"
+              label="Add to"
+              v-model="forNetworks"
+              :options="networkNames"
+            />
+            <q-input
+              filled
+              dense
+              class="col"
+              label="Private key"
+              v-model="privateKey"
+            />
+          </div>
+        </q-tab-panel>
         <q-tab-panel name="keystore">
           <div class="text-h6 q-mb-sm">Import Keystore File</div>
           <div class="column q-gutter-md">
@@ -61,13 +92,11 @@
         </q-tab-panel>
 
         <q-tab-panel name="ledger">
-          <div class="text-h6">Alarms</div>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          NOT SUPPORTED YET
         </q-tab-panel>
 
         <q-tab-panel name="zilpay">
-          <div class="text-h6">Movies</div>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          NOT SUPPORTED YET
         </q-tab-panel>
       </q-tab-panels>
 
@@ -90,12 +119,13 @@ import { useBlockchainStore } from 'src/stores/blockchain';
 const secret = ref('');
 const keystoreFile = ref<File | null>(null);
 const accountName = ref('Account 1');
+const privateKey = ref('');
 const q = useQuasar();
 const store = useAccountsStore();
 const networksStore = useNetworksStore();
 const blockchainStore = useBlockchainStore();
 const show = ref(true);
-const tab = ref('keystore');
+const tab = ref('privatekey');
 const forNetworks = ref<string[]>(
   blockchainStore.selectedNetwork === null
     ? []
@@ -106,6 +136,27 @@ const networkNames = computed(() => {
 });
 
 const load = async () => {
+  switch (tab.value) {
+    case 'privatekey':
+      return loadPrivateKey();
+    case 'keystore':
+      return await loadKeystore();
+  }
+}
+
+const loadPrivateKey = () => {
+  const account = new Account(privateKey.value);
+  store.add(accountName.value, account.address, account.bech32Address, forNetworks.value, {
+    privateKey: privateKey.value,
+  });
+  show.value = false;
+  q.notify({
+    type: 'info',
+    message: `${account.bech32Address} imported successfully.`,
+  });
+}
+
+const loadKeystore = async () => {
   if (keystoreFile.value == null) {
     q.notify({
       type: 'warning',

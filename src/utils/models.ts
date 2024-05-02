@@ -41,13 +41,17 @@ export interface Account {
   bech32Address: string;
   balance: string;
   balanceRefreshInProgress: boolean;
-  account: KeystoreAccount;
+  account: KeystoreAccount | PrivatekeyAccount;
   networks: string[];
 }
 
 export interface KeystoreAccount {
   keystore: string;
   passphrase: string;
+}
+
+export interface PrivatekeyAccount {
+  privateKey: string;
 }
 
 export interface WaitingTransaction {

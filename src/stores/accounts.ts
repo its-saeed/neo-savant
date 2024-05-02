@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { Account, KeystoreAccount } from 'src/utils';
+import { Account, KeystoreAccount, PrivatekeyAccount } from 'src/utils';
 import { useBlockchainStore } from './blockchain';
 
 export const useAccountsStore = defineStore('accounts', {
@@ -12,7 +12,7 @@ export const useAccountsStore = defineStore('accounts', {
       address: string,
       bech32Address: string,
       networks: string[],
-      account: KeystoreAccount
+      account: KeystoreAccount | PrivatekeyAccount
     ) {
       if (this.getByName(name) !== undefined) {
         throw new Error(
@@ -29,7 +29,11 @@ export const useAccountsStore = defineStore('accounts', {
         balanceRefreshInProgress: false,
       });
       const blockchainStore = useBlockchainStore();
-      blockchainStore.addKeystoreAccount(account);
+      if ('keystore' in account) {
+        blockchainStore.addKeystoreAccount(account);
+      } else {
+        blockchainStore.addAccount(account.privateKey);
+      }
     },
     async refreshBalance(name: string) {
       const account = this.getByName(name);
