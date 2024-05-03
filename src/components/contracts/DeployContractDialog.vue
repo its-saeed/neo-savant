@@ -105,10 +105,17 @@ const deployBtnIsDisabled = computed(() => {
 })
 
 onMounted(async () => {
-  const contractAbi = await getContractAbi(props.code);
-  abi.value = contractAbi;
-  abiParams = contractAbi.params;
-  abiParams.forEach(item => initializationParameters.value[item.vname] = '')
+  try {
+    const contractAbi = await getContractAbi(props.code);
+    abi.value = contractAbi;
+    abiParams = contractAbi.params;
+    abiParams.forEach(item => initializationParameters.value[item.vname] = '')
+  } catch (error) {
+    q.notify({
+      type: 'warning',
+      message: `Failed to get the contract ABI. ${error}`
+    })
+  }
 });
 
 const props = defineProps(['file', 'code']);
