@@ -13,44 +13,34 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { useFilesStore } from 'src/stores/files';
+import { ScillaContract } from 'src/utils';
 import { eventBus } from 'src/event-bus';
-import {
-  ContractInfo,
-  scillaDefaultContracts,
-  getContractById,
-} from '../../contracts';
 
 const selected = ref('');
+const filesStore = useFilesStore();
 
 const fileNodes = computed(() => {
   return [
     {
-      label: 'Default Contracts',
+      label: 'Contracts',
       key: 'default-contracts',
       selectable: false,
       expandable: true,
-      children: scillaDefaultContracts.map((contract: ContractInfo) => ({
+      children: filesStore.files.map((contract: ScillaContract) => ({
         label: contract.name,
-        key: contract.id,
+        key: contract.name,
         icon: 'description',
         iconColor: 'grey-7',
       })),
-    },
-    {
-      key: 'user-defined',
-      selectable: false,
-      expandable: true,
-      label: 'User-defined',
     },
   ];
 });
 
 function change(target: string) {
-  const contract = getContractById(target);
-  if (contract) {
+  filesStore.setSelected(target);
+  const contract = filesStore.getByName(target);
+  if (contract)
     eventBus.emit('contract-selected', contract);
-  } else {
-    console.error(`Failed to find ${target} in default contracts`);
-  }
 }
 </script>

@@ -1,6 +1,6 @@
 import { EventBus } from 'quasar';
-import { ContractInfo } from './contracts';
+import { ScillaContract } from './utils';
 
 export const eventBus = new EventBus<{
-  'contract-selected': (contract: ContractInfo) => void;
+  'contract-selected': (contract: ScillaContract) => void;
 }>();

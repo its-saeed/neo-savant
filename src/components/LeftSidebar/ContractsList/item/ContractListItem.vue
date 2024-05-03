@@ -8,7 +8,7 @@
         <div class="row items-center">
           <truncated-text
             :text="props.contract.address"
-            :length="22"
+            :length="24"
             :position="12"
           />
           <copy-to-clipboard-btn :content="props.contract.address" />

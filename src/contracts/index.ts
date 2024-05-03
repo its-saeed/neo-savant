@@ -9,27 +9,18 @@ import nonFungibleToken from './nonfungible_token.scilla?raw';
 import schnorr from './schnorr.scilla?raw';
 import zilGame from './zil_hash_game.scilla?raw';
 import asciiart from './asciiart.scilla?raw';
+import { ScillaContract } from 'src/utils';
 
-export type ContractInfo = {
-  id: string;
-  name: string;
-  code: string;
-};
-
-export const scillaDefaultContracts: ContractInfo[] = [
-  { id: 'hello-world', name: 'HelloWorld', code: helloWorld },
-  { id: 'zrc6', name: 'ZRC-6', code: zrc6 },
-  { id: 'book-store', name: 'BookStore', code: bookstore },
-  { id: 'crowd-funding', name: 'CrowdFunding', code: crowdfunding },
-  { id: 'auction', name: 'Auction', code: auction },
-  { id: 'fungible-token', name: 'FungibleToken', code: fungibleToken },
-  { id: 'non-fungible', name: 'NonFungible', code: nonFungibleToken },
-  { id: 'zil-game', name: 'ZilGame', code: zilGame },
-  { id: 'schnorr-test', name: 'SchnorrTest', code: schnorr },
-  { id: 'ecdsa-test', name: 'ECDSATest', code: ecdsa },
-  { id: 'asciiart', name: 'AsciiArt', code: asciiart },
+export const defaultScillaContracts: ScillaContract[] = [
+  { name: 'HelloWorld', code: helloWorld },
+  { name: 'ZRC-6', code: zrc6 },
+  { name: 'BookStore', code: bookstore },
+  { name: 'CrowdFunding', code: crowdfunding },
+  { name: 'Auction', code: auction },
+  { name: 'FungibleToken', code: fungibleToken },
+  { name: 'NonFungible', code: nonFungibleToken },
+  { name: 'ZilGame', code: zilGame },
+  { name: 'SchnorrTest', code: schnorr },
+  { name: 'ECDSATest', code: ecdsa },
+  { name: 'AsciiArt', code: asciiart },
 ];
-
-export const getContractById = (id: string): ContractInfo | undefined => {
-  return scillaDefaultContracts.find((contract) => contract.id === id);
-};
