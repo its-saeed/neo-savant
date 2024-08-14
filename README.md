@@ -1,4 +1,4 @@
-# Neo Savant (neo-savant)
+# Neo Savant
 
 Scilla online IDE
 
