@@ -1,97 +1,92 @@
 <template>
   <q-page class="column">
-    <q-bar class="bg-grey-1 text-grey-8 q-pt-sm">
-      <q-btn dense flat label="Save" no-caps icon="save" disabled />
-      <q-separator vertical inset />
-      <!-- <q-btn
+    <q-scroll-area
+      class="full-width"
+      style="height: 38px"
+      :thumb-style="thumbStyle"
+    >
+      <q-tabs
+        v-model="tab"
         dense
-        flat
-        label="Find/Replace"
+        class="bg-grey-2"
+        active-class="bg-grey-4"
+        active-color="grey-10"
+        indicator-color="orange"
+        align="left"
         no-caps
-        icon="search"
-        @click="toggleSearchPanel"
-      />
-      <q-separator vertical inset />
-      <q-btn
-        dense
-        flat
-        label="Code Lints"
-        no-caps
-        icon="healing"
-        @click="toggleLintPanel"
-      /> -->
-      <q-space />
-      <q-btn
-        dense
-        flat
-        label="Deploy"
-        icon="send"
-        @click="deployContract"
-        :disable="contractFile == ''"
+        @update:model-value="updateSelectedFile"
       >
-        <user-network-not-selected />
-      </q-btn>
-    </q-bar>
+        <q-tab
+          class="q-pa-none q-pl-sm"
+          v-for="file in filesStore.openFiles"
+          :name="file"
+          :key="file"
+        >
+          <div class="items-center">
+            {{ file }}
+            <q-btn
+              round
+              dense
+              flat
+              icon="close"
+              size="xs"
+              class="q-ml-xs"
+              @click="closeFile(file)"
+            />
+          </div>
+        </q-tab>
+      </q-tabs>
+    </q-scroll-area>
+    <q-separator color="grey-4" />
 
-    <div class="col row">
+    <div
+      v-for="file in filesStore.openFiles"
+      :name="file"
+      :key="file"
+      v-show="tab === file"
+      class="col row q-mt-xs"
+    >
       <q-scroll-area class="col">
-        <code-mirror @change="editorChanged" v-model="code" basic/>
+        <scilla-editor :contract="filesStore.getByName(file)" ref="editor" />
       </q-scroll-area>
     </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import DeployContractDialog from 'components/contracts/DeployContractDialog.vue';
-import UserNetworkNotSelected from 'components/UserNetworkNotSelectedAlarm.vue';
-import CodeMirror from 'vue-codemirror6';
-
+import { useFilesStore } from 'src/stores/files';
+import ScillaEditor from 'components/TextEditor/ScillaEditor.vue';
 import { ref, onMounted } from 'vue';
 import { eventBus } from 'src/event-bus';
-import { useQuasar } from 'quasar';
-import { ScillaContract } from 'src/utils';
-import { EditorState } from '@codemirror/state';
-import { useFilesStore } from 'src/stores/files';
+import { ScillaFile } from 'src/utils';
 
-const code = ref('');
-const contractFile = ref('');
-// const editor = ref<InstanceType<typeof ScillaEditor>>();
-const q = useQuasar();
+const tab = ref('tab');
+const filesStore = useFilesStore();
+const closeFile = (file: string) => {
+  filesStore.removeFromOpenFiles(file);
+  tab.value = filesStore.openFiles[0];
+};
+
+const thumbStyle = {
+  backgroundColor: 'grey-1',
+  height: '5px',
+};
 
 onMounted(() => {
-  eventBus.on('contract-selected', (contract: ScillaContract) => {
-    code.value = contract.code;
-    contractFile.value = contract.name;
+  eventBus.on('scilla-file-selected', (file: ScillaFile) => {
+    tab.value = file.name;
   });
+
+  if (filesStore.selected) {
+    tab.value = filesStore.selected.name;
+  }
 });
+
+const updateSelectedFile = (tab: string) => {
+  filesStore.setSelected(tab);
+};
 
 defineOptions({
   name: 'EditorPage',
 });
-
-// const toggleSearchPanel = () => {
-//   return;
-//   // if (editor.value) {
-//   //   editor.value.toggleSearchPanel();
-//   // }
-// };
-
-// const toggleLintPanel = () => {
-//   return;
-//   // if (editor.value) {
-//   //   editor.value.toggleLintPanel();
-//   // }
-// };
-
-const deployContract = () => {
-  q.dialog({
-    component: DeployContractDialog,
-    componentProps: { file: contractFile.value, code: code.value },
-  });
-};
-
-const editorChanged = (state: EditorState) => {
-  const filesStore = useFilesStore();
-  filesStore.updateSelectedFileCode(state.doc.toString());
-}
 </script>

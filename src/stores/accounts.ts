@@ -1,6 +1,14 @@
 import { defineStore } from 'pinia';
-import { Account, KeystoreAccount, PrivatekeyAccount } from 'src/utils';
+import {
+  Account,
+  AccountType,
+  KeystoreAccount,
+  LedgerAccount,
+  PrivatekeyAccount,
+  ZilpayAccount,
+} from 'src/utils';
 import { useBlockchainStore } from './blockchain';
+import { Notify } from 'quasar';
 
 export const useAccountsStore = defineStore('accounts', {
   state: () => ({
@@ -12,7 +20,12 @@ export const useAccountsStore = defineStore('accounts', {
       address: string,
       bech32Address: string,
       networks: string[],
-      account: KeystoreAccount | PrivatekeyAccount
+      accountType: AccountType,
+      account:
+        | KeystoreAccount
+        | PrivatekeyAccount
+        | ZilpayAccount
+        | LedgerAccount
     ) {
       if (this.getByName(name) !== undefined) {
         throw new Error(
@@ -23,17 +36,53 @@ export const useAccountsStore = defineStore('accounts', {
         name,
         address,
         bech32Address,
+        accountType,
         account,
         networks,
         balance: '0',
-        balanceRefreshInProgress: false,
       });
       const blockchainStore = useBlockchainStore();
       if ('keystore' in account) {
         blockchainStore.addKeystoreAccount(account);
+      } else if ('zilpay' in account) {
+        blockchainStore.setManagedByZilpay(true);
+      } else if ('index' in account) {
+        // Do nothing for ledger account, because txn verifications are done on ledger
       } else {
         blockchainStore.addAccount(account.privateKey);
       }
+
+      if (blockchainStore.selectedAccount === null) {
+        blockchainStore.setSelectedAccount(name);
+      } else {
+        Notify.create({
+          message: `Do you want to select ${name} as the default account?`,
+          type: 'info',
+          icon: 'help',
+          timeout: 7000,
+          progress: true,
+          actions: [
+            {
+              label: 'Select',
+              color: 'white',
+
+              handler: () => {
+                blockchainStore.setSelectedAccount(name);
+              },
+            },
+          ],
+        });
+      }
+    },
+    remove(name: string) {
+      const account = this.getByName(name);
+      if (account === undefined) {
+        return;
+      }
+
+      this.accounts = this.accounts.filter((account) => account.name !== name);
+      const blockchainStore = useBlockchainStore();
+      blockchainStore.removeAccount(account);
     },
     async refreshBalance(name: string) {
       const account = this.getByName(name);
@@ -41,15 +90,9 @@ export const useAccountsStore = defineStore('accounts', {
         throw new Error(`No account with name of ${name}`);
       }
 
-      account.balanceRefreshInProgress = true;
-      try {
-        const blockchainStore = useBlockchainStore();
-        const balance = await blockchainStore.getBalance(account.address);
-        account.balance = balance;
-      } catch (error) {
-      } finally {
-        account.balanceRefreshInProgress = false;
-      }
+      const blockchainStore = useBlockchainStore();
+      const balance = await blockchainStore.getBalance(account.address);
+      account.balance = balance;
     },
   },
   getters: {

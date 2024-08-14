@@ -1,6 +1,11 @@
 import { EventBus } from 'quasar';
-import { ScillaContract } from './utils';
+import { ScillaFile } from './utils';
 
 export const eventBus = new EventBus<{
-  'contract-selected': (contract: ScillaContract) => void;
+  'scilla-file-selected': (file: ScillaFile) => void;
+  'pending-txn-status-changed': (
+    pending: number,
+    confirmed: number,
+    rejected: number
+  ) => void;
 }>();

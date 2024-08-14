@@ -5,7 +5,7 @@
     :no-esc-dismiss="false"
     backdrop-filter="blur(4px)"
   >
-    <q-card style="width: 500px; max-width: 80vw">
+    <q-card style="width: 600px; max-width: 80vw">
       <q-tabs
         v-model="tab"
         dense
@@ -16,8 +16,8 @@
       >
         <q-tab name="privatekey" label="Private Key" />
         <q-tab name="keystore" label="Keystore" />
-        <q-tab name="ledger" label="Ledger" />
         <q-tab name="zilpay" label="Zilpay" />
+        <q-tab name="ledger" label="Ledger" />
       </q-tabs>
 
       <q-separator />
@@ -91,18 +91,21 @@
           </div>
         </q-tab-panel>
 
-        <q-tab-panel name="ledger">
-          NOT SUPPORTED YET
+        <q-tab-panel name="zilpay">
+          <div class="text-h6 q-mb-sm">Connect to Zilpay</div>
+          Just make sure you're logged in your Zilpay wallet and click Connect.
         </q-tab-panel>
 
-        <q-tab-panel name="zilpay">
-          NOT SUPPORTED YET
+        <q-tab-panel name="ledger">
+          <ImportAccountLedger />
         </q-tab-panel>
       </q-tab-panels>
 
       <q-separator />
       <q-card-actions align="right" class="bg-grey-2">
-        <q-btn no-caps flat color="primary" @click="load">Import</q-btn>
+        <q-btn no-caps flat color="primary" @click="importAccount">{{
+          actionBtn
+        }}</q-btn>
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -115,6 +118,9 @@ import { useQuasar } from 'quasar';
 import { useAccountsStore } from 'stores/accounts';
 import { useNetworksStore } from 'stores/networks';
 import { useBlockchainStore } from 'src/stores/blockchain';
+import { AccountType, readFileAsText } from 'src/utils';
+import { zilpayHelper } from 'src/utils';
+import ImportAccountLedger from './ImportAccountLedger.vue';
 
 const secret = ref('');
 const keystoreFile = ref<File | null>(null);
@@ -131,30 +137,52 @@ const forNetworks = ref<string[]>(
     ? []
     : [blockchainStore.selectedNetwork.name]
 );
+
 const networkNames = computed(() => {
   return networksStore.networks.map((network) => network.name);
 });
 
-const load = async () => {
+const actionBtn = computed(() => {
+  if (tab.value === 'ledger') {
+    return 'Close';
+  } else if (tab.value === 'zilpay') {
+    return 'Connect';
+  } else {
+    return 'Import';
+  }
+});
+
+const importAccount = async () => {
   switch (tab.value) {
     case 'privatekey':
       return loadPrivateKey();
     case 'keystore':
       return await loadKeystore();
+    case 'zilpay':
+      return await connectToZilpay();
+    case 'ledger':
+      return (show.value = false);
   }
-}
+};
 
 const loadPrivateKey = () => {
   const account = new Account(privateKey.value);
-  store.add(accountName.value, account.address, account.bech32Address, forNetworks.value, {
-    privateKey: privateKey.value,
-  });
+  store.add(
+    accountName.value,
+    account.address,
+    account.bech32Address,
+    forNetworks.value,
+    AccountType.PRIVATEKEY,
+    {
+      privateKey: privateKey.value,
+    }
+  );
   show.value = false;
   q.notify({
-    type: 'info',
+    type: 'positive',
     message: `${account.bech32Address} imported successfully.`,
   });
-}
+};
 
 const loadKeystore = async () => {
   if (keystoreFile.value == null) {
@@ -165,15 +193,22 @@ const loadKeystore = async () => {
     return;
   }
 
-  const keystore = await readUploadedFileAsText(keystoreFile.value);
+  const keystore = await readFileAsText(keystoreFile.value);
   try {
     const account = await Account.fromFile(keystore.toString(), secret.value);
-    store.add(accountName.value, account.address, account.bech32Address, forNetworks.value, {
-      keystore: keystore.toString(),
-      passphrase: secret.value,
-    });
+    store.add(
+      accountName.value,
+      account.address,
+      account.bech32Address,
+      forNetworks.value,
+      AccountType.KEYSTORE,
+      {
+        keystore: keystore.toString(),
+        passphrase: secret.value,
+      }
+    );
     q.notify({
-      type: 'info',
+      type: 'positive',
       message: `${account.bech32Address} imported successfully.`,
     });
     show.value = false;
@@ -185,24 +220,19 @@ const loadKeystore = async () => {
   }
 };
 
-const readUploadedFileAsText = async (
-  inputFile: File
-): Promise<string | ArrayBuffer> => {
-  console.log(inputFile);
-  const temporaryFileReader = new FileReader();
-
-  return new Promise((resolve, reject) => {
-    temporaryFileReader.onerror = () => {
-      temporaryFileReader.abort();
-      reject(new Error('Problem parsing input file.'));
-    };
-
-    temporaryFileReader.onload = () => {
-      if (temporaryFileReader.result !== null) {
-        resolve(temporaryFileReader.result);
-      }
-    };
-    temporaryFileReader.readAsText(inputFile);
-  });
+const connectToZilpay = async () => {
+  try {
+    await zilpayHelper.connect();
+    q.notify({
+      type: 'positive',
+      message: 'Successfully connected to Zilpay wallet!',
+    });
+    show.value = false;
+  } catch (error) {
+    q.notify({
+      type: 'negative',
+      message: `Failed to connect to Zilpay. ${error}`,
+    });
+  }
 };
 </script>

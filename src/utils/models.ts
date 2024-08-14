@@ -1,11 +1,15 @@
-import { Zilliqa } from '@zilliqa-js/zilliqa';
+import { ZilPay } from 'zilpay-types';
+import { TransactionStatus } from './txns';
 
 export interface Network {
   name: string;
   url: string;
   chainId: number;
   msgVersion: number;
-  zilliqa: Zilliqa;
+  faucet?: string;
+  explorer?: string;
+  txQueryLink?: string; // In the explorer
+  contractQueryLink?: string; // In the explorer
 }
 
 export interface Contract {
@@ -35,13 +39,20 @@ export interface Tag {
   color: string;
 }
 
+export enum AccountType {
+  KEYSTORE,
+  PRIVATEKEY,
+  ZILPAY,
+  LEDGER,
+}
+
 export interface Account {
   name: string;
   address: string;
   bech32Address: string;
   balance: string;
-  balanceRefreshInProgress: boolean;
-  account: KeystoreAccount | PrivatekeyAccount;
+  accountType: AccountType;
+  account: KeystoreAccount | PrivatekeyAccount | ZilpayAccount | LedgerAccount;
   networks: string[];
 }
 
@@ -54,17 +65,28 @@ export interface PrivatekeyAccount {
   privateKey: string;
 }
 
-export interface WaitingTransaction {
+export interface Transaction {
   id: string;
   network: string;
-  statusMessage: string;
   from: string;
   to: string;
   amount: string;
+  status: TransactionStatus;
+  statusMessage: string;
+  success?: boolean; // As soon as txn is confirmed, indicates whether is failed or succeeded.
 }
 
-export interface ScillaContract {
+export interface ScillaFile {
   name: string;
   code: string;
   fileName?: string;
+}
+
+export interface ZilpayAccount {
+  zilpay: ZilPay;
+}
+
+export interface LedgerAccount {
+  index: number;
+  publicKey: string;
 }

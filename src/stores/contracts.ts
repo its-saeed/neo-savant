@@ -2,7 +2,6 @@ import { defineStore } from 'pinia';
 import { Contract, PendingContract, TransitionCalls } from '../utils/models';
 import { Init, TxParams, Value, toChecksumAddress } from '@zilliqa-js/zilliqa';
 import { useBlockchainStore } from './blockchain';
-import { useTransactionsStore } from './transactions';
 import { Notify } from 'quasar';
 
 export const useContractsStore = defineStore('contracts', {
@@ -10,8 +9,20 @@ export const useContractsStore = defineStore('contracts', {
     contracts: [] as Contract[],
     pending: [] as PendingContract[],
     transitionCalls: {} as TransitionCalls,
+    selected: null as Contract | null,
   }),
   actions: {
+    setSelected(name: string) {
+      const contract = this.getByName(name);
+      if (contract === undefined) {
+        throw new Error(`No contract with name of ${name}`);
+      }
+
+      this.selected = contract;
+    },
+    deselect() {
+      this.selected = null;
+    },
     async callTransition(
       contractAddress: string,
       transitionName: string,
@@ -53,53 +64,43 @@ export const useContractsStore = defineStore('contracts', {
         return;
       }
 
-      const transactions = useTransactionsStore();
+      const confirmed: string[] = []; // Regardless of success value
       const blockchain = useBlockchainStore();
-      const responses = await Promise.all(
-        this.pending.map((c) => {
-          return transactions.refreshTransactionStatus(c.txHash);
-        })
-      );
-
-      const deployed = this.pending.filter((c, i) => {
-        const statusMessage = responses[i].statusMessage;
-        return statusMessage === 'Confirmed';
-      });
-
-      const contractAddresses = await Promise.all(
-        deployed.map((c) => {
-          return blockchain.getContractAddressFromTransactionID(c.txHash);
-        })
-      );
-
-      deployed.forEach((c, i) => {
-        Notify.create({
-          type: 'info',
-          message: `Contract deployment finished, ${c.txHash}`,
-        });
-        this.contracts.push({
-          name: c.name,
-          network: c.network,
-          address: contractAddresses[i],
-        });
-      });
-
-      this.pending = this.pending.filter((c, i) => {
-        const statusMessage = responses[i].statusMessage;
-        const id = responses[i].ID;
-        if (statusMessage === 'Confirmed') {
-          return false; // To filter out
-        } else if (statusMessage.startsWith('Rejected')) {
-          // TODO: Show the exact message.
-          Notify.create({
-            type: 'warning',
-            message: `Contract deployment failed, id: ${id}, reason: ${statusMessage}`,
-          });
-          return false; // To filter out
+      for (const pending of this.pending) {
+        const { success } = await blockchain.getTransactionStatus(
+          pending.txHash
+        );
+        if (success === undefined) {
+          // Not confirmed yet
+          continue;
+        } else {
+          confirmed.push(pending.txHash);
+          if (success) {
+            const addr = await blockchain.getContractAddressFromTransactionID(
+              pending.txHash
+            );
+            Notify.create({
+              type: 'info',
+              message: `Contract deployment finished, ${pending.txHash}`,
+            });
+            this.contracts.push({
+              name: pending.name,
+              network: pending.network,
+              address: addr,
+            });
+          } else {
+            Notify.create({
+              type: 'warning',
+              message: `Contract deployment failed, txHash: ${pending.txHash}. Please check the transaction receipt.`,
+            });
+          }
         }
+      }
 
-        return true;
-      });
+      // Exclude confirmed contracts, regardless of success/failure.
+      this.pending = this.pending.filter(
+        (pending) => !confirmed.includes(pending.txHash)
+      );
     },
     async deploy(
       name: string,
@@ -125,7 +126,7 @@ export const useContractsStore = defineStore('contracts', {
       );
 
       if (id === undefined) {
-        throw new Error('Invalid transaction hash: ', id);
+        throw new Error(`Invalid transaction hash: ${id}`);
       }
 
       this.pending.push({
@@ -148,6 +149,18 @@ export const useContractsStore = defineStore('contracts', {
     },
   },
   getters: {
+    contractsForNetwork:
+      (state) =>
+      (networkName: string): Contract[] => {
+        try {
+          return state.contracts.filter(
+            (contract) => contract.network === networkName
+          );
+        } catch (error) {
+          // No network is selected
+          return [];
+        }
+      },
     getByName:
       (state) =>
       (name: string): Contract | undefined => {
